@@ -5,28 +5,54 @@ import (
 	"strconv"
 )
 
-var LoFunction = map[string]bool{
-	"splice-3":   true,
-	"splice-5":   true,
-	"init-loss":  true,
-	"alt-start":  true,
-	"frameshift": true,
-	"nonsense":   true,
-	"stop-gain":  true,
-	"span":       true,
+// colname
+var (
+	clinvarCol = "ClinVar Significance"
+	hgmdCol    = "HGMD Pred"
+)
+
+// regexp
+var (
+	isSplice     = regexp.MustCompile(`splice[+-35]?$`)
+	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
+	IsHgmdDM     = regexp.MustCompile(`DM`)
+)
+
+// Tier1 >1
+// LoF 3
+var FuncInfo = map[string]int{
+	"splice-3":     3,
+	"splice-5":     3,
+	"init-loss":    3,
+	"alt-start":    3,
+	"frameshift":   3,
+	"nonsense":     3,
+	"stop-gain":    3,
+	"span":         3,
+	"missense":     2,
+	"cds-del":      2,
+	"cds-indel":    2,
+	"cds-ins":      2,
+	"splice-10":    2,
+	"splice+10":    2,
+	"coding-synon": 1,
+	"splice-20":    1,
+	"splice+20":    1,
 }
+
+// to be update
 var LoFIntoleranceGene = map[string]bool{
 	"ZNF574": true,
 }
 
 func AddACMG2015(inputData map[string]string) map[string]string {
-	var info = make(map[string]int)
+	var info = make(map[string]string)
 	info["PVS1"] = checkPVS1(inputData)
 	inputData["ACMG"] = predACMG2015(info)
 	return inputData
 }
 
-func predACMG2015(info map[string]int) string {
+func predACMG2015(info map[string]string) string {
 
 	PVS1 := info["PVS1"]
 
@@ -66,71 +92,156 @@ func predACMG2015(info map[string]int) string {
 	// PVS
 	//  PVS1 5 得分
 	//  PVS1 6 不得分
-	if PVS1 == 5 {
-		PVS1 = 1
+	if PVS1 == "5" {
+		PVS1 = "1"
 	}
-	if PVS1 == 6 {
-		PVS1 = 1
+	if PVS1 == "6" {
+		PVS1 = "0"
 	}
-	sumPVS := PVS1
+	var sumPVS int
+	if PVS1 == "1" {
+		sumPVS++
+	}
 
 	// PS
 	//  PS1 2 暂时不得分
 	//  PS1 3 得分
 	//  PS1 4 不得分
-	if PS1 == 2 || PS1 == 4 {
-		PS1 = 0
+	if PS1 == "2" || PS1 == "4" {
+		PS1 = "0"
 	}
-	if PS1 == 3 {
-		PS1 = 1
+	if PS1 == "3" {
+		PS1 = "1"
 	}
 	//  PS4 5 得分
-	if PS4 == 5 {
-		PS4 = 1
+	if PS4 == "5" {
+		PS4 = "1"
 	}
-	sumPS := PS1 + PS2 + PS3 + PS4
+	var sumPS int
+	if PS1 == "1" {
+		sumPS++
+	}
+	if PS2 == "1" {
+		sumPS++
+	}
+	if PS3 == "1" {
+		sumPS++
+	}
+	if PS4 == "1" {
+		sumPS++
+	}
 
 	// PM
 	//  不与PS4 同时得分
-	if PS4 > 0 {
-		PM2 = 0
+	if PS4 == "1" {
+		PM2 = "0"
 	}
 	//  PM3 2 升级到PS得分
-	if PM3 == 2 {
+	if PM3 == "2" {
 		sumPS++
-		PM3 = 0
+		PM3 = "0"
 	}
 	//  PM5 2 暂时得分
 	//  PM5 3 得分
 	//  PM5 4 不得分
 	//  PM5 5 得分
-	if PM5 == 2 || PM5 == 3 || PM5 == 5 {
-		PM5 = 1
+	if PM5 == "2" || PM5 == "3" || PM5 == "5" {
+		PM5 = "1"
 	}
-	if PM5 == 4 {
-		PM5 = 0
+	if PM5 == "4" {
+		PM5 = "0"
 	}
-	sumPM := PM1 + PM2 + PM3 + PM4 + PM5 + PM6
+	var sumPM int
+	if PM1 == "1" {
+		sumPM++
+	}
+	if PM2 == "1" {
+		sumPM++
+	}
+	if PM3 == "1" {
+		sumPM++
+	}
+	if PM4 == "1" {
+		sumPM++
+	}
+	if PM5 == "1" {
+		sumPM++
+	}
+	if PM6 == "1" {
+		sumPM++
+	}
 
 	// PP
 	//  PP1 2 升级到PM
-	if PP1 == 2 {
+	if PP1 == "2" {
 		sumPM++
-		PP1 = 0
+		PP1 = "0"
 	}
 	//  PS1/PM5  PP5 不共存
-	if PS1 > 0 || PM5 > 0 {
-		PP5 = 0
+	if PS1 == "1" || PM5 == "1" {
+		PP5 = "0"
 	}
 	//  ACMG 已取消该证据
-	PP5 = 0
-	sumPP := PP1 + PP2 + PP3 + PP4 + PP5
+	PP5 = "0"
+	var sumPP int
+	if PP1 == "1" {
+		sumPP++
+	}
+	if PP2 == "1" {
+		sumPP++
+	}
+	if PP3 == "1" {
+		sumPP++
+	}
+	if PP4 == "1" {
+		sumPP++
+	}
+	if PP5 == "1" {
+		sumPP++
+	}
+
 	// BA
-	sumBA := BA1
+	var sumBA int
+	if BA1 == "1" {
+		sumBA++
+	}
 	// BS
-	sumBS := BS1 + BS2 + BS3 + BS4
+	var sumBS int
+	if BS1 == "1" {
+		sumBS++
+	}
+	if BS2 == "1" {
+		sumBS++
+	}
+	if BS3 == "1" {
+		sumBS++
+	}
+	if BS4 == "1" {
+		sumBS++
+	}
 	// BP
-	sumBP := BP1 + BP2 + BP3 + BP4 + BP5 + BP6 + BP7
+	var sumBP int
+	if BP1 == "1" {
+		sumBP++
+	}
+	if BP2 == "1" {
+		sumBP++
+	}
+	if BP3 == "1" {
+		sumBP++
+	}
+	if BP4 == "1" {
+		sumBP++
+	}
+	if BP5 == "1" {
+		sumBP++
+	}
+	if BP6 == "1" {
+		sumBP++
+	}
+	if BP7 == "1" {
+		sumBP++
+	}
 
 	var ACMG = make(map[string]bool)
 	if sumPVS > 0 {
@@ -183,27 +294,26 @@ func predACMG2015(info map[string]int) string {
 	}
 }
 
-var isSplice = regexp.MustCompile(`splice[+-35]?$`)
-
-func checkPVS1(inputData map[string]string) int {
+// PVS1
+func checkPVS1(inputData map[string]string) string {
 	var function = inputData["Function"]
-	if !LoFunction[function] {
-		return 0
+	if FuncInfo[function] < 3 {
+		return "0"
 	}
 	var geneSymbol = inputData["Gene Symbol"]
 	if !LoFIntoleranceGene[geneSymbol] {
-		return 0
+		return "0"
 	}
 	if isSplice.MatchString(function) {
 		score, err := strconv.ParseFloat(inputData["dbscSNV_RF_SCORE"], 32)
 		if err == nil && score >= 0.6 {
-			return 1
+			return "1"
 		}
 		score, err = strconv.ParseFloat(inputData["dbscSNV_ADA_SCORE"], 32)
 		if err == nil && score >= 0.6 {
-			return 1
+			return "1"
 		}
-		return 0
+		return "0"
 	}
-	return 1
+	return "1"
 }
