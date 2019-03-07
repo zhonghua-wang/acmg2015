@@ -181,7 +181,7 @@ func PredACMG2015(info map[string]string) string {
 	if PS1 == "1" || PM5 == "1" {
 		PP5 = "0"
 	}
-	//  ACMG 已取消该证据
+	//  ACMG 已取消证据 PP5
 	PP5 = "0"
 	var sumPP int
 	if PP1 == "1" {
@@ -221,6 +221,8 @@ func PredACMG2015(info map[string]string) string {
 	}
 	// BP
 	var sumBP int
+	// ACMG 已取消证据 BP6
+	BP6 = "0"
 	if BP1 == "1" {
 		sumBP++
 	}
