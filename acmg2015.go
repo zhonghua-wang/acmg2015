@@ -48,11 +48,11 @@ var LoFIntoleranceGene = map[string]bool{
 func AddACMG2015(inputData map[string]string) map[string]string {
 	var info = make(map[string]string)
 	info["PVS1"] = checkPVS1(inputData)
-	inputData["ACMG"] = predACMG2015(info)
+	inputData["ACMG"] = PredACMG2015(info)
 	return inputData
 }
 
-func predACMG2015(info map[string]string) string {
+func PredACMG2015(info map[string]string) string {
 
 	PVS1 := info["PVS1"]
 
