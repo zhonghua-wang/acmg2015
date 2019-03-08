@@ -27,8 +27,8 @@ func CheckBA1(item map[string]string) string {
 }
 
 func CompareBA1(item map[string]string) {
-	rule := "PP3"
-	val := CheckPP3(item)
+	rule := "BA1"
+	val := CheckBA1(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
