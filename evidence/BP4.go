@@ -21,7 +21,7 @@ func CheckBP4(item map[string]string) string {
 	} else {
 		return "0"
 	}
-	if isSplice.MatchString(item["Function"]) {
+	if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
 		if isP.MatchString(item["dbscSNV_RF_pred"]) &&
 			isP.MatchString(item["dbscSNV_ADA_pred"]) {
 			return "1"
@@ -42,12 +42,15 @@ func CheckBP4(item map[string]string) string {
 	return ""
 }
 
-func CompareBP4(item map[string]string) {
+func CompareBP4(item map[string]string, lostOnly bool) {
 	rule := "BP4"
 	val := CheckBP4(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
+			if lostOnly && val != "1" {
+				return
+			}
 			fmt.Fprintf(
 				os.Stderr,
 				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
@@ -62,7 +65,6 @@ func CompareBP4(item map[string]string) {
 				"PhyloP Vertebrates Pred",
 				"PhyloP Placental Mammals Pred",
 				"Function",
-				"PVS1",
 				"dbscSNV_RF_pred",
 				"dbscSNV_ADA_pred",
 				"SIFT Pred",

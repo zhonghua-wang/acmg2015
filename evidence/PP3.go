@@ -8,6 +8,7 @@ import (
 
 var (
 	isSplice      = regexp.MustCompile(`splice`)
+	isSplice20    = regexp.MustCompile(`splice[+-]20`)
 	isD           = regexp.MustCompile(`D`)
 	isDeleterious = regexp.MustCompile(`deleterious`)
 )
@@ -22,7 +23,7 @@ func CheckPP3(item map[string]string) string {
 	} else {
 		return "0"
 	}
-	if isSplice.MatchString(item["Function"]) {
+	if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
 		if item["PVS1"] == "1" || item["PVS1"] == "5" {
 			return "0"
 		} else {
@@ -46,12 +47,15 @@ func CheckPP3(item map[string]string) string {
 	return ""
 }
 
-func ComparePP3(item map[string]string) {
+func ComparePP3(item map[string]string, lostOnly bool) {
 	rule := "PP3"
 	val := CheckPP3(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
+			if lostOnly && val != "1" {
+				return
+			}
 			fmt.Fprintf(
 				os.Stderr,
 				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
@@ -67,13 +71,14 @@ func ComparePP3(item map[string]string) {
 				"PhyloP Placental Mammals Pred",
 				"Function",
 				"PVS1",
+				"dbscSNV_RF_pred",
 				"dbscSNV_ADA_pred",
 				"SIFT Pred",
 				"Polyphen2 HVAR Pred",
 				"MutationTaster Pred",
 				"Ens Condel Pred",
 			} {
-				fmt.Fprintf(os.Stderr, "\t%s:[%s]\n", key, item[key])
+				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 			}
 		}
 	}
