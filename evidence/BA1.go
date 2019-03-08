@@ -26,12 +26,15 @@ func CheckBA1(item map[string]string) string {
 	}
 }
 
-func CompareBA1(item map[string]string) {
+func CompareBA1(item map[string]string, lostOnly bool) {
 	rule := "BA1"
 	val := CheckBA1(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
+			if lostOnly && val != "1" {
+				return
+			}
 			fmt.Fprintf(
 				os.Stderr,
 				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
@@ -42,7 +45,7 @@ func CompareBA1(item map[string]string) {
 				item["MutationName"],
 			)
 			for _, key := range BA1AFList {
-				fmt.Fprintf(os.Stderr, "\t%s:[%s]\n", key, item[key])
+				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 			}
 		}
 	}
