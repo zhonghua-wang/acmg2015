@@ -1,5 +1,10 @@
 package evidence
 
+import (
+	"fmt"
+	"os"
+)
+
 var BA1AFThreshold = 0.5
 var BA1AFList = []string{
 	"ESP6500 AF",
@@ -18,5 +23,27 @@ func CheckBA1(item map[string]string) string {
 		return "0"
 	} else {
 		return "1"
+	}
+}
+
+func CompareBA1(item map[string]string) {
+	rule := "PP3"
+	val := CheckPP3(item)
+	if val != item[rule] {
+		if item[rule] == "0" && val == "" {
+		} else {
+			fmt.Fprintf(
+				os.Stderr,
+				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
+				rule,
+				val,
+				item[rule],
+				"MutationName",
+				item["MutationName"],
+			)
+			for _, key := range BA1AFList {
+				fmt.Fprintf(os.Stderr, "\t%s:[%s]\n", key, item[key])
+			}
+		}
 	}
 }

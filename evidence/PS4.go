@@ -1,6 +1,10 @@
 package evidence
 
-import "strconv"
+import (
+	"fmt"
+	"os"
+	"strconv"
+)
 
 var PS4GWASdbORThreshold = 5.0
 
@@ -20,4 +24,23 @@ func CheckPS4(item map[string]string) string {
 		}
 	}
 	return ""
+}
+
+func ComparePS4(item map[string]string) {
+	rule := "PS4"
+	val := CheckPS4(item)
+	if val != item[rule] {
+		if item[rule] == "0" && val == "" {
+		} else {
+			fmt.Fprintf(
+				os.Stderr,
+				"Conflict %s:[%s] vs [%s]\tMutationName[%s]\tGWASdb_or[%s]\n",
+				rule,
+				val,
+				item[rule],
+				item["MutationName"],
+				item["GWASdb_or"],
+			)
+		}
+	}
 }

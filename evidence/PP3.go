@@ -1,6 +1,10 @@
 package evidence
 
-import "regexp"
+import (
+	"fmt"
+	"os"
+	"regexp"
+)
 
 var (
 	isSplice      = regexp.MustCompile(`splice`)
@@ -39,4 +43,37 @@ func CheckPP3(item map[string]string) string {
 		}
 	}
 	return ""
+}
+
+func ComparePP3(item map[string]string) {
+	rule := "PP3"
+	val := CheckPP3(item)
+	if val != item[rule] {
+		if item[rule] == "0" && val == "" {
+		} else {
+			fmt.Fprintf(
+				os.Stderr,
+				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
+				rule,
+				val,
+				item[rule],
+				"MutationName",
+				item["MutationName"],
+			)
+			for _, key := range []string{
+				"GERP++_RS_pred",
+				"PhyloP Vertebrates Pred",
+				"PhyloP Placental Mammals Pred",
+				"Function",
+				"PVS1",
+				"dbscSNV_ADA_pred",
+				"SIFT Pred",
+				"Polyphen2 HVAR Pred",
+				"MutationTaster Pred",
+				"Ens Condel Pred",
+			} {
+				fmt.Fprintf(os.Stderr, "\t%s:[%s]\n", key, item[key])
+			}
+		}
+	}
 }
