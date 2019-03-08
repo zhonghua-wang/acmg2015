@@ -3,6 +3,7 @@ package evidence
 import (
 	"fmt"
 	"os"
+	"regexp"
 )
 
 var BP3Func = map[string]bool{
@@ -10,6 +11,11 @@ var BP3Func = map[string]bool{
 	"cds-ins":   true,
 	"cds-indel": true,
 }
+
+var (
+	isRepeatSeq  = regexp.MustCompile(`\([ACGT]+\)n`)
+	isDeepIntron = regexp.MustCompile(`intron|span|splice[+-]10|splice[+1]20`)
+)
 
 // ture	:	"1"
 // flase:	"0"
@@ -21,6 +27,10 @@ func CheckBP3(item map[string]string) string {
 		} else {
 			return "1"
 		}
+	} else if isDeepIntron.MatchString(item["Function"]) &&
+		isRepeatSeq.MatchString(item["RepeatTag"]) &&
+		item["VarType"] != "snv" && item["VarType"] != "ref" {
+		return "1"
 	} else {
 		return "0"
 	}
