@@ -14,7 +14,7 @@ var BP3Func = map[string]bool{
 
 var (
 	isRepeatSeq  = regexp.MustCompile(`\([ACGT]+\)n`)
-	isDeepIntron = regexp.MustCompile(`intron|span|splice[+-]10|splice[+1]20`)
+	isDeepIntron = regexp.MustCompile(`intron|span|splice[+-]10|splice[+-]20`)
 )
 
 // ture	:	"1"
@@ -45,14 +45,16 @@ func CompareBP3(item map[string]string) {
 		} else {
 			fmt.Fprintf(
 				os.Stderr,
-				"Conflict %s:[%s] vs [%s]\tMutationName[%s]\tFunction[%s]\tRepeatTag[%s]\n",
+				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
 				rule,
 				val,
 				item[rule],
+				"MutationName",
 				item["MutationName"],
-				item["Function"],
-				item["RepeatTag"],
 			)
+			for _, key := range []string{"Function", "RepeatTag", "VarType"} {
+				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
+			}
 		}
 	}
 }
