@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var BA1AFThreshold = 0.5
+var BA1AFThreshold = 0.05
 var BA1AFList = []string{
 	"ESP6500 AF",
 	"1000G AF",

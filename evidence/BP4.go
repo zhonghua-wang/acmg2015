@@ -43,8 +43,8 @@ func CheckBP4(item map[string]string) string {
 }
 
 func CompareBP4(item map[string]string) {
-	rule := "PP3"
-	val := CheckPP3(item)
+	rule := "BP4"
+	val := CheckBP4(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
@@ -63,13 +63,14 @@ func CompareBP4(item map[string]string) {
 				"PhyloP Placental Mammals Pred",
 				"Function",
 				"PVS1",
+				"dbscSNV_RF_pred",
 				"dbscSNV_ADA_pred",
 				"SIFT Pred",
 				"Polyphen2 HVAR Pred",
 				"MutationTaster Pred",
 				"Ens Condel Pred",
 			} {
-				fmt.Fprintf(os.Stderr, "\t%s:[%s]\n", key, item[key])
+				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 			}
 		}
 	}

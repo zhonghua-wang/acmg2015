@@ -29,7 +29,7 @@ func CheckBP3(item map[string]string) string {
 
 func CompareBP3(item map[string]string) {
 	rule := "BP3"
-	val := CheckPM4(item)
+	val := CheckBP3(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
