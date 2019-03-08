@@ -7,37 +7,33 @@ import (
 )
 
 var (
-	isSplice      = regexp.MustCompile(`splice`)
-	isD           = regexp.MustCompile(`D`)
-	isDeleterious = regexp.MustCompile(`deleterious`)
+	isP       = regexp.MustCompile(`P`)
+	isNeutral = regexp.MustCompile(`neutral`)
 )
 
 // ture	:	"1"
 // flase:	"0"
 // nil	:	""
-func CheckPP3(item map[string]string) string {
-	if isD.MatchString(item["GERP++_RS_pred"]) &&
-		item["PhyloP Vertebrates Pred"] == "高度保守" &&
-		item["PhyloP Placental Mammals Pred"] == "高度保守" {
+func CheckBP4(item map[string]string) string {
+	if isP.MatchString(item["GERP++_RS_pred"]) &&
+		(item["PhyloP Vertebrates Pred"] == "保守" || item["PhyloP Vertebrates Pred"] == "不保守") &&
+		(item["PhyloP Placental Mammals Pred"] == "保守" || item["PhyloP Placental Mammals Pred"] == "不保守") {
 	} else {
 		return "0"
 	}
 	if isSplice.MatchString(item["Function"]) {
-		if item["PVS1"] == "1" || item["PVS1"] == "5" {
-			return "0"
+		if isP.MatchString(item["dbscSNV_RF_pred"]) &&
+			isP.MatchString(item["dbscSNV_ADA_pred"]) {
+			return "1"
 		} else {
-			if isD.MatchString(item["dbscSNV_RF_pred"]) &&
-				isD.MatchString(item["dbscSNV_ADA_pred"]) {
-				return "1"
-			} else {
-				return "0"
-			}
+			return "0"
 		}
 	} else {
-		if isD.MatchString(item["SIFT Pred"]) &&
-			isD.MatchString(item["Polyphen2 HVAR Pred"]) &&
-			isD.MatchString(item["MutationTaster Pred"]) &&
-			isDeleterious.MatchString(item["Ens Condel Pred"]) {
+		if isP.MatchString(item["SIFT Pred"]) &&
+			isP.MatchString(item["Polyphen2 HVAR Pred"]) &&
+			isP.MatchString(item["Polyphen2 HDIV Pred"]) &&
+			isP.MatchString(item["MutationTaster Pred"]) &&
+			isNeutral.MatchString(item["Ens Condel Pred"]) {
 			return "1"
 		} else {
 			return "0"
@@ -46,7 +42,7 @@ func CheckPP3(item map[string]string) string {
 	return ""
 }
 
-func ComparePP3(item map[string]string) {
+func CompareBP4(item map[string]string) {
 	rule := "PP3"
 	val := CheckPP3(item)
 	if val != item[rule] {
