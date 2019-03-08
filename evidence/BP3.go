@@ -5,22 +5,21 @@ import (
 	"os"
 )
 
-var PM4Func = map[string]bool{
+var BP3Func = map[string]bool{
 	"cds-del":   true,
 	"cds-ins":   true,
 	"cds-indel": true,
-	"stop-loss": true,
 }
 
 // ture	:	"1"
 // flase:	"0"
 // nil	:	""
-func CheckPM4(item map[string]string) string {
-	if PM4Func[item["Function"]] {
+func CheckBP3(item map[string]string) string {
+	if BP3Func[item["Function"]] {
 		if item["RepeatTag"] == "" || item["RepeatTag"] == "." {
-			return "1"
-		} else {
 			return "0"
+		} else {
+			return "1"
 		}
 	} else {
 		return "0"
@@ -28,8 +27,8 @@ func CheckPM4(item map[string]string) string {
 	return ""
 }
 
-func ComparePM4(item map[string]string) {
-	rule := "PM4"
+func CompareBP3(item map[string]string) {
+	rule := "BP3"
 	val := CheckPM4(item)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
