@@ -57,10 +57,6 @@ func CompareBP7(item map[string]string, lostOnly bool) {
 				"Function",
 				"dbscSNV_RF_pred",
 				"dbscSNV_ADA_pred",
-				"SIFT Pred",
-				"Polyphen2 HVAR Pred",
-				"MutationTaster Pred",
-				"Ens Condel Pred",
 			} {
 				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 			}

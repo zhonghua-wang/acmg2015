@@ -69,6 +69,7 @@ func CompareBP4(item map[string]string, lostOnly bool) {
 				"dbscSNV_ADA_pred",
 				"SIFT Pred",
 				"Polyphen2 HVAR Pred",
+				"Polyphen2 HDIV Pred",
 				"MutationTaster Pred",
 				"Ens Condel Pred",
 			} {
