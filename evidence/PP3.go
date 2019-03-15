@@ -18,8 +18,8 @@ var (
 // nil	:	""
 func CheckPP3(item map[string]string) string {
 	if isD.MatchString(item["GERP++_RS_pred"]) &&
-		item["PhyloP Vertebrates Pred"] == "高度保守" &&
-		item["PhyloP Placental Mammals Pred"] == "高度保守" {
+		item["PhyloP Vertebrates Pred"] == "保守" &&
+		item["PhyloP Placental Mammals Pred"] == "保守" {
 	} else {
 		return "0"
 	}

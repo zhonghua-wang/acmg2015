@@ -16,8 +16,8 @@ var (
 // nil	:	""
 func CheckBP4(item map[string]string) string {
 	if isP.MatchString(item["GERP++_RS_pred"]) &&
-		(item["PhyloP Vertebrates Pred"] == "保守" || item["PhyloP Vertebrates Pred"] == "不保守") &&
-		(item["PhyloP Placental Mammals Pred"] == "保守" || item["PhyloP Placental Mammals Pred"] == "不保守") {
+		item["PhyloP Vertebrates Pred"] == "不保守" &&
+		item["PhyloP Placental Mammals Pred"] == "不保守" {
 	} else {
 		return "0"
 	}
