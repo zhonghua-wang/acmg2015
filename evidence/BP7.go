@@ -17,7 +17,7 @@ func CheckBP7(item map[string]string) string {
 	if !isBP7Func.MatchString(item["Function"]) {
 		return "0"
 	}
-	if isP.MatchString(item["GERP++_RS_pred"]) &&
+	if item["GERP++_RS_pred"] == "不保守" &&
 		item["PhyloP Vertebrates Pred"] == "不保守" &&
 		item["PhyloP Placental Mammals Pred"] == "不保守" {
 	} else {
