@@ -34,7 +34,6 @@ func CheckBP3(item map[string]string) string {
 	} else {
 		return "0"
 	}
-	return ""
 }
 
 func CompareBP3(item map[string]string) {
@@ -43,7 +42,7 @@ func CompareBP3(item map[string]string) {
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
-			fmt.Fprintf(
+			_, _ = fmt.Fprintf(
 				os.Stderr,
 				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
 				rule,
@@ -53,7 +52,7 @@ func CompareBP3(item map[string]string) {
 				item["MutationName"],
 			)
 			for _, key := range []string{"Function", "RepeatTag", "VarType"} {
-				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
+				_, _ = fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 			}
 		}
 	}
