@@ -6,17 +6,9 @@ import (
 	"regexp"
 )
 
-// colname
-var (
-	clinvarCol = "ClinVar Significance"
-	hgmdCol    = "HGMD Pred"
-)
-
 // regexp
 var (
-	isSplice     = regexp.MustCompile(`splice[+-35]?$`)
-	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
-	IsHgmdDM     = regexp.MustCompile(`DM`)
+	isSplice = regexp.MustCompile(`splice[+-35]?$`)
 )
 
 func AddACMG2015(inputData map[string]string) map[string]string {
