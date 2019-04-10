@@ -52,11 +52,11 @@ func CheckAFLowThen(item map[string]string, threshold float64) bool {
 	return true
 }
 
-func CheckPVS1(item map[string]string, LOFList map[string]string) string {
+func CheckPVS1(item map[string]string, LOFList map[string]int) string {
 	if FuncInfo[item["Function"]] < 3 {
 		return "0"
 	}
-	if LOFList[item["Gene Symbol"]] == "" || LOFList[item["Gene Symbol"]] == "0" {
+	if LOFList[item["Gene Symbol"]] == 0 {
 		return "0"
 	}
 	if CheckDomain(item) {
@@ -68,7 +68,7 @@ func CheckPVS1(item map[string]string, LOFList map[string]string) string {
 	return "0"
 }
 
-func ComparePVS1(item, LOFList map[string]string) {
+func ComparePVS1(item map[string]string, LOFList map[string]int) {
 	rule := "PVS1"
 	val := CheckPVS1(item, LOFList)
 	if val != item[rule] {
