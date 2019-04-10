@@ -1,7 +1,9 @@
-package acmg2015
+package evidence
 
 import (
+	"fmt"
 	"github.com/liserjrqlxue/simple-util"
+	"os"
 	"regexp"
 	"strconv"
 )
@@ -64,6 +66,31 @@ func CheckPVS1(item map[string]string, LOFList map[string]string) string {
 		return "1"
 	}
 	return "0"
+}
+
+func ComparePVS1(item, LOFList map[string]string) {
+	rule := "PVS1"
+	val := CheckPVS1(item, LOFList)
+	if val != item[rule] {
+		if item[rule] == "0" && val == "" {
+		} else {
+			fmt.Fprintf(
+				os.Stderr,
+				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
+				rule,
+				val,
+				item[rule],
+				"MutationName",
+				item["MutationName"],
+			)
+			for _, key := range []string{
+				"Function",
+				"Gene Symbol",
+			} {
+				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
+			}
+		}
+	}
 }
 
 // 突变位点后有重要的蛋白结构功能区域

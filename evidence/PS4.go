@@ -34,13 +34,18 @@ func ComparePS4(item map[string]string) {
 		} else {
 			fmt.Fprintf(
 				os.Stderr,
-				"Conflict %s:[%s] vs [%s]\tMutationName[%s]\tGWASdb_or[%s]\n",
+				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
 				rule,
 				val,
 				item[rule],
+				"MutationName",
 				item["MutationName"],
-				item["GWASdb_or"],
 			)
+			for _, key := range []string{
+				"GWASdb_or",
+			} {
+				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
+			}
 		}
 	}
 }
