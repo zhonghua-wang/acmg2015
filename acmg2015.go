@@ -1,8 +1,8 @@
 package acmg2015
 
 import (
+	"github.com/liserjrqlxue/simple-util"
 	"regexp"
-	"strconv"
 )
 
 // colname
@@ -40,38 +40,10 @@ var FuncInfo = map[string]int{
 	"splice+20":    1,
 }
 
-// to be update
-var LoFIntoleranceGene = map[string]bool{
-	"ZNF574": true,
-}
-
 func AddACMG2015(inputData map[string]string) map[string]string {
+	var LOFIntoleranceGeneList = simple_util.JsonFile2Map("db/LOFIntoleranceGeneList.json")
 	var info = make(map[string]string)
-	info["PVS1"] = checkPVS1(inputData)
+	info["PVS1"] = CheckPVS1(inputData, LOFIntoleranceGeneList)
 	inputData["ACMG"] = PredACMG2015(info)
 	return inputData
-}
-
-// PVS1
-func checkPVS1(inputData map[string]string) string {
-	var function = inputData["Function"]
-	if FuncInfo[function] < 3 {
-		return "0"
-	}
-	var geneSymbol = inputData["Gene Symbol"]
-	if !LoFIntoleranceGene[geneSymbol] {
-		return "0"
-	}
-	if isSplice.MatchString(function) {
-		score, err := strconv.ParseFloat(inputData["dbscSNV_RF_SCORE"], 32)
-		if err == nil && score >= 0.6 {
-			return "1"
-		}
-		score, err = strconv.ParseFloat(inputData["dbscSNV_ADA_SCORE"], 32)
-		if err == nil && score >= 0.6 {
-			return "1"
-		}
-		return "0"
-	}
-	return "1"
 }

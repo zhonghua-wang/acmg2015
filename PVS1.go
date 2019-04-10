@@ -50,20 +50,20 @@ func CheckAFLowThen(item map[string]string, threshold float64) bool {
 	return true
 }
 
-func CheckPVS1(item map[string]string, LOFList map[string]int) int {
+func CheckPVS1(item map[string]string, LOFList map[string]string) string {
 	if FuncInfo[item["Function"]] < 3 {
-		return 0
+		return "0"
 	}
-	if LOFList[item["Gene Symbol"]] == 0 {
-		return 0
+	if LOFList[item["Gene Symbol"]] == "" || LOFList[item["Gene Symbol"]] == "0" {
+		return "0"
 	}
 	if CheckDomain(item) {
-		return 1
+		return "1"
 	}
 	if CheckOtherPathogenic(item) {
-		return 1
+		return "1"
 	}
-	return 0
+	return "0"
 }
 
 // 突变位点后有重要的蛋白结构功能区域
