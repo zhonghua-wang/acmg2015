@@ -133,40 +133,59 @@ func main() {
 			"Gene Symbol": "ACD",
 		}
 		LOFIntoleranceGeneList := simple_util.JsonFile2MapInt("LOFIntoleranceGeneList.json")
-		fmt.Println(evidence.CheckPVS1(item, LOFIntoleranceGeneList))
+		fmt.Println("PVS1", evidence.CheckPVS1(item, LOFIntoleranceGeneList))
 	}
 
-	// build PS1 db
+	// build PS1/PM5 db
 	if false {
 		// load ClinVar
-		var ClinVarMissense, ClinVarPHGVSlist = evidence.FindPathogenicMissense(clinvarAnno, clinvarCol, evidence.IsClinVarPLP)
+		var ClinVarMissense, ClinVarPHGVSList, ClinVarAAPosList = evidence.FindPathogenicMissense(clinvarAnno, clinvarCol, evidence.IsClinVarPLP)
 		jsonByte, err := simple_util.JsonIndent(ClinVarMissense, "", "\t")
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "ClinVarPathogenicMissense.json")
-		jsonByte, err = simple_util.JsonIndent(ClinVarPHGVSlist, "", "\t")
+		jsonByte, err = simple_util.JsonIndent(ClinVarPHGVSList, "", "\t")
 		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarPHGVSlist.json")
+		simple_util.Json2file(jsonByte, "ClinVarPHGVSList.json")
+		jsonByte, err = simple_util.JsonIndent(ClinVarAAPosList, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarAAPosList.json")
 
 		// load HGMD
-		var HGMDMissense, HGMDPHGVSlist = evidence.FindPathogenicMissense(clinvarAnno, hgmdCol, evidence.IsHgmdDM)
+		var HGMDMissense, HGMDPHGVSlist, HGMDAAPosList = evidence.FindPathogenicMissense(clinvarAnno, hgmdCol, evidence.IsHgmdDM)
 		jsonByte, err = simple_util.JsonIndent(HGMDMissense, "", "\t")
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "HGMDPathogenicMissense.json")
 		jsonByte, err = simple_util.JsonIndent(HGMDPHGVSlist, "", "\t")
 		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HGMDPHGVSlist.json")
+		simple_util.Json2file(jsonByte, "HGMDPHGVSList.json")
+		jsonByte, err = simple_util.JsonIndent(HGMDAAPosList, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDAAPosList.json")
 	}
 	// test PS1
-	if true {
+	if false {
 		var item = map[string]string{
 			"MutationName": "NM_000142.4(FGFR3): c.1138G>A (p.Gly380Arg)",
 			"Transcript":   "NM_000142.4",
 			"pHGVS":        "p.G380R | p.Gly380Arg",
 		}
 		var ClinVarMissense = simple_util.JsonFile2MapInt("ClinVarPathogenicMissense.json")
-		var ClinVarPHGVSlist = simple_util.JsonFile2MapInt("ClinVarPHGVSlist.json")
+		var ClinVarPHGVSlist = simple_util.JsonFile2MapInt("ClinVarPHGVSList.json")
 		var HGMDMissense = simple_util.JsonFile2MapInt("HGMDPathogenicMissense.json")
-		var HGMDPHGVSlist = simple_util.JsonFile2MapInt("HGMDPHGVSlist.json")
-		fmt.Println(evidence.CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist))
+		var HGMDPHGVSlist = simple_util.JsonFile2MapInt("HGMDPHGVSList.json")
+		fmt.Println("PS1", evidence.CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist))
+	}
+	// test PM5
+	if true {
+		var item = map[string]string{
+			"MutationName": "NM_000016.4(ACADM): c.616C>T (p.Arg206Cys)",
+			"Transcript":   "NM_000016.4",
+			"pHGVS":        "p.R206C | p.Arg206Cys",
+		}
+		var ClinVarPHGVSlist = simple_util.JsonFile2MapInt("ClinVarPHGVSList.json")
+		var ClinVarAAPosList = simple_util.JsonFile2MapInt("ClinVarAAPosList.json")
+		var HGMDPHGVSlist = simple_util.JsonFile2MapInt("HGMDPHGVSList.json")
+		var HGMDAAPosList = simple_util.JsonFile2MapInt("HGMDAAPosList.json")
+		fmt.Println("PM5", evidence.CheckPM5(item, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList))
 	}
 }

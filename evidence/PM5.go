@@ -38,9 +38,9 @@ func CheckPM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPH
 	}
 }
 
-func ComparePM5(item map[string]string, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist map[string]int) {
+func ComparePM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList map[string]int) {
 	rule := "PM5"
-	val := CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist)
+	val := CheckPM5(item, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList)
 	if val != item[rule] {
 		_, _ = fmt.Fprintf(
 			os.Stderr,
