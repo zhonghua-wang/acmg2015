@@ -30,9 +30,9 @@ func CheckPM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPH
 	}
 
 	if flag1 && flag2 {
-		return "1"
-	} else if flag1 || flag2 {
 		return "2"
+	} else if flag1 || flag2 {
+		return "1"
 	} else {
 		return "0"
 	}
