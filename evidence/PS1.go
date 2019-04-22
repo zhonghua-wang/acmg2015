@@ -25,63 +25,35 @@ func FindPathogenicMissense(fileName, key string, pathogenicRegexp *regexp.Regex
 		var key = item["Transcript"] + ":" + item["pHGVS"]
 		pHGVSlist[key]++
 		varList[item["MutationName"]]++
-
 	}
 	return varList, pHGVSlist
 }
 
-// colname
-var (
-	clinvarCol = "ClinVar Significance"
-	hgmdCol    = "HGMD Pred"
-)
-
 // PS1
-// to be update
-var missenseHit = map[string]map[string]bool{
-	"1-957604-957605-G-A": {
-		clinvarCol: true,
-		hgmdCol:    true,
-	},
-}
-
-// PS1
-func CheckPS1(item map[string]string) int {
-	var function = item["Function"]
-	if function == "missense" {
-		return 0
+func CheckPS1(item map[string]string, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist map[string]int) string {
+	if item["Function"] == "missense" {
+		return "0"
 	}
+
+	var mutation = item["MutationName"]
+	var key = item["Transcript"] + ":" + item["pHGVS"]
 	var flag1, flag2 bool
-	if IsClinVarPLP.MatchString(item[clinvarCol]) {
+	ClinVarMissenseNo := ClinVarMissense[mutation]
+	HGMDMissenseNo := HGMDMissense[mutation]
+	ClinVarPHGVSNo := ClinVarPHGVSlist[key]
+	HGMDPHGVSNo := HGMDPHGVSlist[key]
+	if ClinVarMissenseNo < ClinVarPHGVSNo {
 		flag1 = true
 	}
-	if IsHgmdDM.MatchString(item[hgmdCol]) {
-		flag2 = true
-	}
-
-	var (
-		chr   = item["#Chr"]
-		start = item["Start"]
-		stop  = item["Stop"]
-		ref   = item["Ref"]
-		alt   = item["Call"]
-		//transcript=inputData["Transcript"]
-		//aaref=inputData["AAref"]
-		//aaalt=inputData["AAalt"]
-	)
-	var key1 = chr + "-" + start + "-" + stop + "-" + ref + "-" + alt
-	if missenseHit[key1][clinvarCol] {
-		flag1 = true
-	}
-	if missenseHit[key1][hgmdCol] {
+	if HGMDMissenseNo < HGMDPHGVSNo {
 		flag2 = true
 	}
 
 	if flag1 && flag2 {
-		return 1
+		return "1"
 	} else if flag1 || flag2 {
-		return 2
+		return "2"
 	} else {
-		return 0
+		return "0"
 	}
 }
