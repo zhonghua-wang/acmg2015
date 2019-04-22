@@ -11,11 +11,13 @@ import (
 var (
 	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
 	IsHgmdDM     = regexp.MustCompile(`DM$|DM\|`)
+	getAAPos     = regexp.MustCompile(`^p\.[A-Z]\d+`)
 )
 
-func FindPathogenicMissense(fileName, key string, pathogenicRegexp *regexp.Regexp) (map[string]int, map[string]int) {
+func FindPathogenicMissense(fileName, key string, pathogenicRegexp *regexp.Regexp) (map[string]int, map[string]int, map[string]int) {
 	var varList = make(map[string]int)
-	var pHGVSlist = make(map[string]int)
+	var pHGVSList = make(map[string]int)
+	var pPosList = make(map[string]int)
 	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
 	for _, item := range itemArray {
 		if !pathogenicRegexp.MatchString(item[key]) {
@@ -25,10 +27,14 @@ func FindPathogenicMissense(fileName, key string, pathogenicRegexp *regexp.Regex
 			continue
 		}
 		var key = item["Transcript"] + ":" + item["pHGVS"]
-		pHGVSlist[key]++
+		pHGVSList[key]++
 		varList[item["MutationName"]]++
+		AAPos := getAAPos.FindString(item["pHGVS"])
+		if AAPos != "" {
+			pPosList[item["Transcript"]+":"+AAPos]++
+		}
 	}
-	return varList, pHGVSlist
+	return varList, pHGVSList, pPosList
 }
 
 // PS1
