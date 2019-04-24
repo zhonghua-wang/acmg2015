@@ -1,9 +1,7 @@
 package evidence
 
 import (
-	"fmt"
 	"github.com/liserjrqlxue/simple-util"
-	"os"
 	"regexp"
 	"strconv"
 )
@@ -74,21 +72,7 @@ func ComparePVS1(item map[string]string, LOFList map[string]int) {
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
-			fmt.Fprintf(
-				os.Stderr,
-				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
-				rule,
-				val,
-				item[rule],
-				"MutationName",
-				item["MutationName"],
-			)
-			for _, key := range []string{
-				"Function",
-				"Gene Symbol",
-			} {
-				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
-			}
+			PrintConflict(item, rule, val, []string{"Function", "Gene Symbol"})
 		}
 	}
 }

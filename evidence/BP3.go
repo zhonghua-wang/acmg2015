@@ -1,8 +1,6 @@
 package evidence
 
 import (
-	"fmt"
-	"os"
 	"regexp"
 )
 
@@ -42,18 +40,7 @@ func CompareBP3(item map[string]string) {
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
-			_, _ = fmt.Fprintf(
-				os.Stderr,
-				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
-				rule,
-				val,
-				item[rule],
-				"MutationName",
-				item["MutationName"],
-			)
-			for _, key := range []string{"Function", "RepeatTag", "VarType"} {
-				_, _ = fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
-			}
+			PrintConflict(item, rule, val, []string{"Function", "RepeatTag", "VarType"})
 		}
 	}
 }

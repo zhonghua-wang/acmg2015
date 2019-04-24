@@ -1,8 +1,6 @@
 package evidence
 
 import (
-	"fmt"
-	"os"
 	"regexp"
 )
 
@@ -56,30 +54,24 @@ func ComparePP3(item map[string]string, lostOnly bool) {
 			if lostOnly && val != "1" {
 				return
 			}
-			fmt.Fprintf(
-				os.Stderr,
-				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
+			PrintConflict(
+				item,
 				rule,
 				val,
-				item[rule],
-				"MutationName",
-				item["MutationName"],
+				[]string{
+					"GERP++_RS_pred",
+					"PhyloP Vertebrates Pred",
+					"PhyloP Placental Mammals Pred",
+					"Function",
+					"PVS1",
+					"dbscSNV_RF_pred",
+					"dbscSNV_ADA_pred",
+					"SIFT Pred",
+					"Polyphen2 HVAR Pred",
+					"MutationTaster Pred",
+					"Ens Condel Pred",
+				},
 			)
-			for _, key := range []string{
-				"GERP++_RS_pred",
-				"PhyloP Vertebrates Pred",
-				"PhyloP Placental Mammals Pred",
-				"Function",
-				"PVS1",
-				"dbscSNV_RF_pred",
-				"dbscSNV_ADA_pred",
-				"SIFT Pred",
-				"Polyphen2 HVAR Pred",
-				"MutationTaster Pred",
-				"Ens Condel Pred",
-			} {
-				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
-			}
 		}
 	}
 }

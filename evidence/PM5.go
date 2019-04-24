@@ -1,10 +1,5 @@
 package evidence
 
-import (
-	"fmt"
-	"os"
-)
-
 // PS1
 func CheckPM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList map[string]int) string {
 	if item["Function"] == "missense" {
@@ -42,17 +37,6 @@ func ComparePM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMD
 	rule := "PM5"
 	val := CheckPM5(item, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList)
 	if val != item[rule] {
-		_, _ = fmt.Fprintf(
-			os.Stderr,
-			"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
-			rule,
-			val,
-			item[rule],
-			"MutationName",
-			item["MutationName"],
-		)
-		for _, key := range []string{"Function", "Transcript", "pHGVS"} {
-			_, _ = fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
-		}
+		PrintConflict(item, rule, val, []string{"Function", "Transcript", "pHGVS"})
 	}
 }

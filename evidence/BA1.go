@@ -1,10 +1,5 @@
 package evidence
 
-import (
-	"fmt"
-	"os"
-)
-
 var BA1AFThreshold = 0.05
 var BA1AFList = []string{
 	"ESP6500 AF",
@@ -35,18 +30,7 @@ func CompareBA1(item map[string]string, lostOnly bool) {
 			if lostOnly && val != "1" {
 				return
 			}
-			fmt.Fprintf(
-				os.Stderr,
-				"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
-				rule,
-				val,
-				item[rule],
-				"MutationName",
-				item["MutationName"],
-			)
-			for _, key := range BA1AFList {
-				fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
-			}
+			PrintConflict(item, rule, val, BA1AFList)
 		}
 	}
 }

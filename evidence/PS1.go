@@ -1,9 +1,7 @@
 package evidence
 
 import (
-	"fmt"
 	"github.com/liserjrqlxue/simple-util"
-	"os"
 	"regexp"
 )
 
@@ -70,17 +68,6 @@ func ComparePS1(item map[string]string, ClinVarMissense, ClinVarPHGVSlist, HGMDM
 	rule := "PS1"
 	val := CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist)
 	if val != item[rule] {
-		_, _ = fmt.Fprintf(
-			os.Stderr,
-			"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
-			rule,
-			val,
-			item[rule],
-			"MutationName",
-			item["MutationName"],
-		)
-		for _, key := range []string{"Function", "Transcript", "pHGVS"} {
-			_, _ = fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
-		}
+		PrintConflict(item, rule, val, []string{"Function", "Transcript", "pHGVS"})
 	}
 }
