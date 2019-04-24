@@ -3,7 +3,6 @@ package evidence
 import (
 	"github.com/liserjrqlxue/simple-util"
 	"regexp"
-	"strconv"
 )
 
 func FindLOFIntoleranceGeneList(fileName, key string, pathogenicRegexp *regexp.Regexp) map[string]int {
@@ -16,7 +15,7 @@ func FindLOFIntoleranceGeneList(fileName, key string, pathogenicRegexp *regexp.R
 		if FuncInfo[item["Function"]] < 3 {
 			continue
 		}
-		if !CheckAFLowThen(item, 0.05) {
+		if !CheckAFAllLowThen(item, PVS1AFlist, 0.05, true) {
 			continue
 		}
 		geneList[item["Gene Symbol"]]++
@@ -24,7 +23,7 @@ func FindLOFIntoleranceGeneList(fileName, key string, pathogenicRegexp *regexp.R
 	return geneList
 }
 
-var AFlist = []string{
+var PVS1AFlist = []string{
 	"GnomAD EAS AF",
 	"GnomAD AF",
 	"1000G AF",
@@ -33,21 +32,6 @@ var AFlist = []string{
 	"ExAC AF",
 	"PVFD AF",
 	"Panel AlleleFreq",
-}
-
-func CheckAFLowThen(item map[string]string, threshold float64) bool {
-	for _, key := range AFlist {
-		af := item[key]
-		if af == "" || af == "." {
-			continue
-		}
-		AF, err := strconv.ParseFloat(af, 64)
-		simple_util.CheckErr(err)
-		if AF > threshold {
-			return false
-		}
-	}
-	return true
 }
 
 func CheckPVS1(item map[string]string, LOFList map[string]int) string {
@@ -72,7 +56,7 @@ func ComparePVS1(item map[string]string, LOFList map[string]int) {
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
-			PrintConflict(item, rule, val, []string{"Function", "Gene Symbol"})
+			PrintConflict(item, rule, val, "Function", "Gene Symbol")
 		}
 	}
 }
