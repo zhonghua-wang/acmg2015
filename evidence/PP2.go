@@ -9,10 +9,10 @@ var (
 	PP2MissenseRatioThreshold = 0.50
 )
 
-func CalGeneMissenseRatio(fileName, key string, filter *regexp.Regexp, threshold int) map[string]float32 {
+func CalGeneMissenseRatio(fileName, key string, filter *regexp.Regexp, threshold int) map[string]float64 {
 	var allCount = make(map[string]int)
 	var targetCount = make(map[string]int)
-	var ratioCount = make(map[string]float32)
+	var ratioCount = make(map[string]float64)
 	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
 	for _, item := range itemArray {
 		if !filter.MatchString(item[key]) {
@@ -27,10 +27,10 @@ func CalGeneMissenseRatio(fileName, key string, filter *regexp.Regexp, threshold
 	for key, val := range targetCount {
 		if threshold > 0 {
 			if allCount[key] >= threshold {
-				ratioCount[key] = float32(val) / float32(allCount[key])
+				ratioCount[key] = float64(val) / float64(allCount[key])
 			}
 		} else {
-			ratioCount[key] = float32(val) / float32(allCount[key])
+			ratioCount[key] = float64(val) / float64(allCount[key])
 		}
 	}
 	return ratioCount
