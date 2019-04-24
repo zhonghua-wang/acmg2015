@@ -40,7 +40,7 @@ func CompareBP3(item map[string]string) {
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
-			PrintConflict(item, rule, val, []string{"Function", "RepeatTag", "VarType"})
+			PrintConflict(item, rule, val, "Function", "RepeatTag", "VarType")
 		}
 	}
 }

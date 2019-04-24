@@ -37,6 +37,6 @@ func ComparePM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMD
 	rule := "PM5"
 	val := CheckPM5(item, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, []string{"Function", "Transcript", "pHGVS"})
+		PrintConflict(item, rule, val, "Function", "Transcript", "pHGVS")
 	}
 }

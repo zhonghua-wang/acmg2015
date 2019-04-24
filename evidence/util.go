@@ -58,7 +58,7 @@ func CheckAFAllLowThen(item map[string]string, AFlist []string, threshold float6
 	return true
 }
 
-func PrintConflict(item map[string]string, rule, val string, keys []string) {
+func PrintConflict(item map[string]string, rule, val string, keys ...string) {
 	fmt.Fprintf(
 		os.Stderr,
 		"Conflict %s:[%s] vs [%s]\t%s[%s]\n",

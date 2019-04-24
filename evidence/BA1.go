@@ -30,7 +30,7 @@ func CompareBA1(item map[string]string, lostOnly bool) {
 			if lostOnly && val != "1" {
 				return
 			}
-			PrintConflict(item, rule, val, BA1AFList)
+			PrintConflict(item, rule, val, BA1AFList...)
 		}
 	}
 }

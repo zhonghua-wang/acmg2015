@@ -52,6 +52,6 @@ func ComparePP2(item map[string]string, ClinVarPP2GeneList, HgmPP2GeneList map[s
 	rule := "PP2"
 	val := CheckPP2(item, ClinVarPP2GeneList, HgmPP2GeneList)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, []string{"Function", "Gene Symbol"})
+		PrintConflict(item, rule, val, "Function", "Gene Symbol")
 	}
 }

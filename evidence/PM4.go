@@ -27,6 +27,6 @@ func ComparePM4(item map[string]string) {
 	rule := "PM4"
 	val := CheckPM4(item)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, []string{"Function", "RepeatTag"})
+		PrintConflict(item, rule, val, "Function", "RepeatTag")
 	}
 }

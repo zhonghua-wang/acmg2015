@@ -30,7 +30,7 @@ func ComparePS4(item map[string]string) {
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
-			PrintConflict(item, rule, val, []string{"GWASdb_or"})
+			PrintConflict(item, rule, val, "GWASdb_or")
 		}
 	}
 }

@@ -66,6 +66,6 @@ func ComparePS1(item map[string]string, ClinVarMissense, ClinVarPHGVSlist, HGMDM
 	rule := "PS1"
 	val := CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, []string{"Function", "Transcript", "pHGVS"})
+		PrintConflict(item, rule, val, "Function", "Transcript", "pHGVS")
 	}
 }

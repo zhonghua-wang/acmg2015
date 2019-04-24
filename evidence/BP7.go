@@ -43,14 +43,12 @@ func CompareBP7(item map[string]string, lostOnly bool) {
 				item,
 				rule,
 				val,
-				[]string{
-					"GERP++_RS_pred",
-					"PhyloP Vertebrates Pred",
-					"PhyloP Placental Mammals Pred",
-					"Function",
-					"dbscSNV_RF_pred",
-					"dbscSNV_ADA_pred",
-				},
+				"GERP++_RS_pred",
+				"PhyloP Vertebrates Pred",
+				"PhyloP Placental Mammals Pred",
+				"Function",
+				"dbscSNV_RF_pred",
+				"dbscSNV_ADA_pred",
 			)
 		}
 	}

@@ -27,7 +27,7 @@ func CompareBS1(item map[string]string, lostOnly bool) {
 			if lostOnly && val != "1" {
 				return
 			}
-			PrintConflict(item, rule, val, BS1AFList)
+			PrintConflict(item, rule, val, BS1AFList...)
 		}
 	}
 }

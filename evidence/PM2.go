@@ -45,6 +45,6 @@ func ComparePM2(item map[string]string) {
 	rule := "PM2"
 	val := CheckPM2(item)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, append(PM2AFList, "OMIM inheritance"))
+		PrintConflict(item, rule, val, append(PM2AFList, "OMIM inheritance")...)
 	}
 }
