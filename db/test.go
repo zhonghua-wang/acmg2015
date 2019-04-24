@@ -28,8 +28,10 @@ var (
 
 // colname
 var (
-	clinvarCol = "ClinVar Significance"
-	hgmdCol    = "HGMD Pred"
+	clinvarCol      = "ClinVar Significance"
+	hgmdCol         = "HGMD Pred"
+	domainDbNSFPCol = "Interpro_domain"
+	domainPfamCol   = "pfamId"
 )
 
 func main() {
@@ -176,7 +178,7 @@ func main() {
 		fmt.Println("PS1", evidence.CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist))
 	}
 	// test PM5
-	if true {
+	if false {
 		var item = map[string]string{
 			"MutationName": "NM_000016.4(ACADM): c.616C>T (p.Arg206Cys)",
 			"Transcript":   "NM_000016.4",
@@ -187,5 +189,103 @@ func main() {
 		var HGMDPHGVSlist = simple_util.JsonFile2MapInt("HGMDPHGVSList.json")
 		var HGMDAAPosList = simple_util.JsonFile2MapInt("HGMDAAPosList.json")
 		fmt.Println("PM5", evidence.CheckPM5(item, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList))
+	}
+
+	// build PM1 db
+	// load ClinVar
+	if true {
+		var ClinVarPathogenicDomainDbNSFP = evidence.FindDomain(clinvarAnno, domainDbNSFPCol, clinvarCol, evidence.IsClinVarPLP)
+		jsonByte, err := simple_util.JsonIndent(ClinVarPathogenicDomainDbNSFP, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarPathogenicDomainDbNSFP.json")
+
+		var ClinVarBenignDomainDbNSFP = evidence.FindDomain(clinvarAnno, domainDbNSFPCol, clinvarCol, evidence.IsClinVarBLB)
+		jsonByte, err = simple_util.JsonIndent(ClinVarBenignDomainDbNSFP, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarBenignDomainDbNSFP.json")
+
+		var ClinVarDomainDbNSFP = make(map[string]int)
+		for key, val := range ClinVarPathogenicDomainDbNSFP {
+			if ClinVarBenignDomainDbNSFP[key] > 0 {
+				continue
+			}
+			if val >= 2 {
+				ClinVarDomainDbNSFP[key] = val
+			}
+		}
+		jsonByte, err = simple_util.JsonIndent(ClinVarDomainDbNSFP, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarDomainDbNSFP.json")
+
+		var ClinVarPathogenicDomainPfam = evidence.FindDomain(clinvarAnno, domainPfamCol, clinvarCol, evidence.IsClinVarPLP)
+		jsonByte, err = simple_util.JsonIndent(ClinVarPathogenicDomainPfam, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarPathogenicDomainPfam.json")
+
+		var ClinVarBenignDomainPfam = evidence.FindDomain(clinvarAnno, domainPfamCol, clinvarCol, evidence.IsClinVarBLB)
+		jsonByte, err = simple_util.JsonIndent(ClinVarBenignDomainPfam, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarBenignDomainPfam.json")
+
+		var ClinVarDomainPfam = make(map[string]int)
+		for key, val := range ClinVarPathogenicDomainPfam {
+			if ClinVarBenignDomainPfam[key] > 0 {
+				continue
+			}
+			if val >= 2 {
+				ClinVarDomainPfam[key] = val
+			}
+		}
+		jsonByte, err = simple_util.JsonIndent(ClinVarDomainPfam, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarDomainPfam.json")
+	}
+	// load HGMD
+	if true {
+		var HGMDPathogenicDomainDbNSFP = evidence.FindDomain(hgmdAnno, domainDbNSFPCol, hgmdCol, evidence.IsHgmdDM)
+		jsonByte, err := simple_util.JsonIndent(HGMDPathogenicDomainDbNSFP, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDPathogenicDomainDbNSFP.json")
+
+		var HGMDBenignDomainDbNSFP = evidence.FindDomain(hgmdAnno, domainDbNSFPCol, clinvarCol, evidence.IsClinVarBLB)
+		jsonByte, err = simple_util.JsonIndent(HGMDBenignDomainDbNSFP, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDBenignDomainDbNSFP.json")
+
+		var HGMDDomainDbNSFP = make(map[string]int)
+		for key, val := range HGMDPathogenicDomainDbNSFP {
+			if HGMDBenignDomainDbNSFP[key] > 0 {
+				continue
+			}
+			if val >= 2 {
+				HGMDDomainDbNSFP[key] = val
+			}
+		}
+		jsonByte, err = simple_util.JsonIndent(HGMDDomainDbNSFP, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDDomainDbNSFP.json")
+
+		var HGMDPathogenicDomainPfam = evidence.FindDomain(hgmdAnno, domainPfamCol, hgmdCol, evidence.IsHgmdDM)
+		jsonByte, err = simple_util.JsonIndent(HGMDPathogenicDomainPfam, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDPathogenicDomainPfam.json")
+
+		var HGMDBenignDomainPfam = evidence.FindDomain(hgmdAnno, domainPfamCol, clinvarCol, evidence.IsClinVarBLB)
+		jsonByte, err = simple_util.JsonIndent(HGMDBenignDomainPfam, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDBenignDomainPfam.json")
+
+		var HGMDDomainPfam = make(map[string]int)
+		for key, val := range HGMDPathogenicDomainPfam {
+			if HGMDBenignDomainPfam[key] > 0 {
+				continue
+			}
+			if val >= 2 {
+				HGMDDomainPfam[key] = val
+			}
+		}
+		jsonByte, err = simple_util.JsonIndent(HGMDDomainPfam, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDDomainPfam.json")
 	}
 }
