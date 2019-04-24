@@ -291,7 +291,7 @@ func main() {
 
 	// build PP2 db
 	// load ClinVar
-	if true {
+	if false {
 		var ClinVarGenePathogenicMissenseRatio = evidence.CalGeneMissenseRatio(clinvarAnno, clinvarCol, evidence.IsClinVarPLP, 10)
 		jsonByte, err := simple_util.JsonIndent(ClinVarGenePathogenicMissenseRatio, "", "\t")
 		simple_util.CheckErr(err)
@@ -302,7 +302,7 @@ func main() {
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "ClinVarGeneBenignMissenseRatio.json")
 
-		var ClinVarPP2GeneList = make(map[string]float32)
+		var ClinVarPP2GeneList = make(map[string]float64)
 		for key, val := range ClinVarGenePathogenicMissenseRatio {
 			if ClinVarGeneBenignMissenseRatio[key] < 0.1 {
 				ClinVarPP2GeneList[key] = val
@@ -313,7 +313,7 @@ func main() {
 		simple_util.Json2file(jsonByte, "ClinVarPP2GeneList.json")
 	}
 	// load HGMD
-	if true {
+	if false {
 		var hgmdGenePathogenicMissenseRatio = evidence.CalGeneMissenseRatio(hgmdAnno, hgmdCol, evidence.IsHgmdDM, 10)
 		jsonByte, err := simple_util.JsonIndent(hgmdGenePathogenicMissenseRatio, "", "\t")
 		simple_util.CheckErr(err)
@@ -324,7 +324,7 @@ func main() {
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "HgmdGeneBenignMissenseRatio.json")
 
-		var hgmPP2GeneList = make(map[string]float32)
+		var hgmPP2GeneList = make(map[string]float64)
 		for key, val := range hgmdGenePathogenicMissenseRatio {
 			if hgmdGeneBenignMissenseRatio[key] < 0.1 {
 				hgmPP2GeneList[key] = val
@@ -333,5 +333,20 @@ func main() {
 		jsonByte, err = simple_util.JsonIndent(hgmPP2GeneList, "", "\t")
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "HgmPP2GeneList.json")
+	}
+
+	//build BP1 db
+	// load ClinVar
+	if true {
+		var ClinVarGenePathogenicLoFRatio = evidence.CalGeneLoFRatio(clinvarAnno, clinvarCol, evidence.IsClinVarPLP, 10)
+		jsonByte, err := simple_util.JsonIndent(ClinVarGenePathogenicLoFRatio, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarGenePathogenicLoFRatio.json")
+	}
+	if true {
+		var HgmdGeneBenignLoFRatio = evidence.CalGeneLoFRatio(hgmdAnno, hgmdCol, evidence.IsHgmdDM, 10)
+		jsonByte, err := simple_util.JsonIndent(HgmdGeneBenignLoFRatio, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HgmdGenePathogenicLoFRatio.json")
 	}
 }
