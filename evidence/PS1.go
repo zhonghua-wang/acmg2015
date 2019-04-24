@@ -7,9 +7,7 @@ import (
 
 // regexp
 var (
-	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
-	IsHgmdDM     = regexp.MustCompile(`DM$|DM\|`)
-	getAAPos     = regexp.MustCompile(`^p\.[A-Z]\d+`)
+	getAAPos = regexp.MustCompile(`^p\.[A-Z]\d+`)
 )
 
 func FindPathogenicMissense(fileName, key string, pathogenicRegexp *regexp.Regexp) (map[string]int, map[string]int, map[string]int) {

@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"github.com/liserjrqlxue/simple-util"
 	"os"
+	"regexp"
 	"strconv"
+)
+
+var (
+	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
+	IsClinVarBLB = regexp.MustCompile(`Benign|Likely_benign`)
+	IsHgmdDM     = regexp.MustCompile(`DM$|DM\|`)
 )
 
 // Tier1 >1
