@@ -37,3 +37,11 @@ func CheckPM1(item map[string]string, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HG
 	}
 	return "0"
 }
+
+func ComparePM1(item map[string]string, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HGMDPfam map[string]int) {
+	rule := "PM1"
+	val := CheckPM1(item, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HGMDPfam)
+	if val != item[rule] {
+		PrintConflict(item, rule, val, "Interpro_domain", "pfamId")
+	}
+}
