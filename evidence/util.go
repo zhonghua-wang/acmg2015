@@ -1,7 +1,9 @@
 package evidence
 
 import (
+	"fmt"
 	"github.com/liserjrqlxue/simple-util"
+	"os"
 	"strconv"
 )
 
@@ -46,4 +48,19 @@ func CheckAFAllLowThen(item map[string]string, AFlist []string, threshold float6
 		}
 	}
 	return true
+}
+
+func PrintConflict(item map[string]string, rule, val string, keys []string) {
+	fmt.Fprintf(
+		os.Stderr,
+		"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
+		rule,
+		val,
+		item[rule],
+		"MutationName",
+		item["MutationName"],
+	)
+	for _, key := range keys {
+		fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
+	}
 }
