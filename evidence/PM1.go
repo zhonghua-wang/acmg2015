@@ -29,10 +29,10 @@ func FindDomain(fileName, key, filterKey string, filter *regexp.Regexp) map[stri
 }
 
 // PM1
-func CheckPM1(item map[string]string, ClinVarDomainDbNSFP, ClinVarDomainPfam, HGMDDomainDbNSFP, HGMDDomainPfam map[string]int) string {
-	var domainDbNSFP = item["Interpro_domain"]
-	var domainPfam = item["pfamId"]
-	if ClinVarDomainDbNSFP[domainDbNSFP] > 0 || ClinVarDomainPfam[domainPfam] > 0 || HGMDDomainDbNSFP[domainDbNSFP] > 0 || HGMDDomainPfam[domainPfam] > 0 {
+func CheckPM1(item map[string]string, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HGMDPfam map[string]int) string {
+	var dbNSFP = item["Interpro_domain"]
+	var pfam = item["pfamId"]
+	if ClinVarDbNSFP[dbNSFP] > 0 || ClinVarPfam[pfam] > 0 || HGMDDbNSFP[dbNSFP] > 0 || HGMDPfam[pfam] > 0 {
 		return "1"
 	}
 	return "0"
