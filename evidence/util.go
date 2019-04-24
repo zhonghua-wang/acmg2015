@@ -12,6 +12,7 @@ var (
 	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
 	IsClinVarBLB = regexp.MustCompile(`Benign|Likely_benign`)
 	IsHgmdDM     = regexp.MustCompile(`DM$|DM\|`)
+	IsHgmdB      = regexp.MustCompile(`DP|FP|DFP`)
 )
 
 // Tier1 >1
