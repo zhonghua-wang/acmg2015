@@ -8,6 +8,15 @@ import (
 	"strconv"
 )
 
+type Region struct {
+	Seqid      string
+	Chromosome string
+	Start      uint64
+	End        uint64
+	Strand     string
+	Gene       string
+}
+
 var (
 	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
 	IsClinVarBLB = regexp.MustCompile(`Benign|Likely_benign`)

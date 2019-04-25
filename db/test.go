@@ -36,14 +36,6 @@ var (
 	domainPfamCol   = "pfamId"
 )
 
-type Region struct {
-	Seqid      string
-	Chromosome string
-	Start      uint64
-	End        uint64
-	Strand     string
-}
-
 func main() {
 
 	// spec.var.list anno clinvar hgmd
@@ -115,28 +107,37 @@ func main() {
 		simple_util.Json2File("accession2chr.json", acce2chr)
 	}
 
-	var RSGalign = "http://ftp.ncbi.nih.gov/refseq/H_sapiens/RefSeqGene/GCF_000001405.25_refseqgene_alignments.gff3"
-	var RSGalignFile = "GCF_000001405.25_refseqgene_alignments.gff3"
+	var genomicGffUrl = "http://ftp.ncbi.nih.gov/refseq/H_sapiens/annotation/GRCh37_latest/refseq_identifiers/GRCh37_latest_genomic.gff.gz"
+	var genomcGffFile = "GRCh37_latest_genomic.gff.gz"
 	if false {
-		simple_util.DownloadFileProgress(RSGalignFile, RSGalign)
+		simple_util.DownloadFileProgress(genomcGffFile, genomicGffUrl)
 	}
-	var RSGinfo = parseGff3.File2GFF3array(RSGalignFile)
+	var genomicGFF = parseGff3.File2GFF3array(genomcGffFile)
 	acce2chr := simple_util.JsonFile2Map("accession2chr.json")
-	var RSGregion = make(map[string]Region)
-	for _, item := range RSGinfo {
-		var region = new(Region)
+	var RSGregion = make(map[string][]evidence.Region)
+	for _, item := range genomicGFF {
+		if item.Type != "transcript" {
+			continue
+		}
+		var region = new(evidence.Region)
 		region.Seqid = item.Seqid
+		region.Chromosome = acce2chr[region.Seqid]
+		if region.Chromosome == "" {
+			continue
+		}
 		region.Start = item.Start
 		region.End = item.End
-		region.Chromosome = acce2chr[region.Seqid]
-		target := item.Attributes["Target"]
-		info := strings.Split(target, " ")
-		if len(info) != 4 {
-			log.Fatalf("Target format unknown\n\t[%s]\n", target)
+		region.Strand = item.Strand
+		region.Gene = item.Attributes["gene"]
+		name := item.Attributes["Name"]
+		old, ok := RSGregion[name]
+		if ok {
+			log.Printf("Duplicate Transcript(%s):\t%+v vs. %+v", name, old, *region)
+		} else {
 		}
-		RSGregion[item.Attributes["ID"]] = *region
+		RSGregion[name] = append(RSGregion[name], *region)
 	}
-	err := simple_util.Json2File("GeneID.info.json", RSGregion)
+	err := simple_util.Json2File("transcript.info.json", RSGregion)
 	simple_util.CheckErr(err)
 
 	// build PVS1 db
