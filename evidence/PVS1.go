@@ -2,6 +2,7 @@ package evidence
 
 import (
 	"github.com/liserjrqlxue/simple-util"
+	"log"
 	"regexp"
 )
 
@@ -34,7 +35,7 @@ var PVS1AFlist = []string{
 	"Panel AlleleFreq",
 }
 
-func CheckPVS1(item map[string]string, LOFList map[string]int) string {
+func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region) string {
 	if FuncInfo[item["Function"]] < 3 {
 		return "0"
 	}
@@ -44,15 +45,21 @@ func CheckPVS1(item map[string]string, LOFList map[string]int) string {
 	if CheckDomain(item) {
 		return "1"
 	}
-	if CheckOtherPathogenic(item) {
-		return "1"
+	regions, ok := transcriptInfo[item["Transcript"]]
+	if ok {
+		if CheckOtherPathogenic(item, regions) {
+			return "1"
+		}
+	} else {
+		log.Printf("Transcript(%s) not in transcriptInfo\n", item["Transcript"])
 	}
+
 	return "0"
 }
 
-func ComparePVS1(item map[string]string, LOFList map[string]int) {
+func ComparePVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region) {
 	rule := "PVS1"
-	val := CheckPVS1(item, LOFList)
+	val := CheckPVS1(item, LOFList, transcriptInfo)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
@@ -67,6 +74,6 @@ func CheckDomain(item map[string]string) bool {
 }
 
 // 突变位点后有其他致病突变（基于公共数据库）位点
-func CheckOtherPathogenic(item map[string]string) bool {
+func CheckOtherPathogenic(item map[string]string, regions []Region) bool {
 	return false
 }
