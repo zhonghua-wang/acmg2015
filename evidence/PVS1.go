@@ -4,6 +4,8 @@ import (
 	"github.com/liserjrqlxue/simple-util"
 	"log"
 	"regexp"
+	"strconv"
+	"strings"
 )
 
 func FindLOFIntoleranceGeneList(fileName, key string, pathogenicRegexp *regexp.Regexp) map[string]int {
@@ -75,5 +77,40 @@ func CheckDomain(item map[string]string) bool {
 
 // 突变位点后有其他致病突变（基于公共数据库）位点
 func CheckOtherPathogenic(item map[string]string, regions []Region) bool {
+	chromosome := strings.Replace(item["#Chr"], "chr", "", -1)
+	start, err := strconv.Atoi(item["Start"])
+	simple_util.CheckErr(err)
+	end := start
+	var flag bool
+	for _, item := range regions {
+		if item.Chromosome != chromosome {
+			continue
+		}
+		if item.Strand == "+" {
+			if int(item.End) >= end {
+				flag = true
+				end = int(item.End)
+			}
+		} else if item.Strand == "-" {
+			if int(item.Start) <= start {
+				flag = true
+				start = int(item.Start)
+			}
+		} else {
+			log.Printf("unknown Strand(%s):%+v", item.Strand, item)
+		}
+		if start > end {
+			flag = false
+		}
+	}
+	if flag {
+		return checkPathogenicOfRegion(chromosome, start, end)
+	} else {
+		log.Printf("can not set region after this variant:[%s]\n", item["MutationName"])
+	}
+	return false
+}
+
+func checkPathogenicOfRegion(chromosome string, start, end int) bool {
 	return false
 }
