@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/liserjrqlxue/acmg2015/evidence"
+	"github.com/liserjrqlxue/parse-gff3"
 	"github.com/liserjrqlxue/simple-util"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,6 +35,14 @@ var (
 	domainDbNSFPCol = "Interpro_domain"
 	domainPfamCol   = "pfamId"
 )
+
+type Region struct {
+	Seqid      string
+	Chromosome string
+	Start      uint64
+	End        uint64
+	Strand     string
+}
 
 func main() {
 
@@ -87,6 +97,47 @@ func main() {
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "spec.var.list.json")
 	}
+
+	// get gene region
+	// chromosome accessions
+	var chrAcce = "http://ftp.ncbi.nlm.nih.gov/genomes/H_sapiens/ARCHIVE/BUILD.37.3/Assembled_chromosomes/chr_accessions_GRCh37.p5"
+	var chrAcceFile = "chr_accessions_GRCh37.p5"
+	if false {
+		simple_util.DownloadFile(chrAcceFile, chrAcce)
+
+	}
+	if false {
+		var acce2chr = make(map[string]string)
+		chrAcceMap := simple_util.File2MapMap(chrAcceFile, "RefSeq Accession.version", "\t")
+		for key, item := range chrAcceMap {
+			acce2chr[key] = item["#Chromosome"]
+		}
+		simple_util.Json2File("accession2chr.json", acce2chr)
+	}
+
+	var RSGalign = "http://ftp.ncbi.nih.gov/refseq/H_sapiens/RefSeqGene/GCF_000001405.25_refseqgene_alignments.gff3"
+	var RSGalignFile = "GCF_000001405.25_refseqgene_alignments.gff3"
+	if false {
+		simple_util.DownloadFileProgress(RSGalignFile, RSGalign)
+	}
+	var RSGinfo = parseGff3.File2GFF3array(RSGalignFile)
+	acce2chr := simple_util.JsonFile2Map("accession2chr.json")
+	var RSGregion = make(map[string]Region)
+	for _, item := range RSGinfo {
+		var region = new(Region)
+		region.Seqid = item.Seqid
+		region.Start = item.Start
+		region.End = item.End
+		region.Chromosome = acce2chr[region.Seqid]
+		target := item.Attributes["Target"]
+		info := strings.Split(target, " ")
+		if len(info) != 4 {
+			log.Fatalf("Target format unknown\n\t[%s]\n", target)
+		}
+		RSGregion[item.Attributes["ID"]] = *region
+	}
+	err := simple_util.Json2File("GeneID.info.json", RSGregion)
+	simple_util.CheckErr(err)
 
 	// build PVS1 db
 	if false {
@@ -337,13 +388,13 @@ func main() {
 
 	//build BP1 db
 	// load ClinVar
-	if true {
+	if false {
 		var ClinVarGenePathogenicLoFRatio = evidence.CalGeneLoFRatio(clinvarAnno, clinvarCol, evidence.IsClinVarPLP, 10)
 		jsonByte, err := simple_util.JsonIndent(ClinVarGenePathogenicLoFRatio, "", "\t")
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "ClinVarGenePathogenicLoFRatio.json")
 	}
-	if true {
+	if false {
 		var HgmdGeneBenignLoFRatio = evidence.CalGeneLoFRatio(hgmdAnno, hgmdCol, evidence.IsHgmdDM, 10)
 		jsonByte, err := simple_util.JsonIndent(HgmdGeneBenignLoFRatio, "", "\t")
 		simple_util.CheckErr(err)
