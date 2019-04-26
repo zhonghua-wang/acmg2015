@@ -9,7 +9,9 @@ import (
 )
 
 type Region struct {
-	Seqid      string
+	Seqid string
+	//Source string
+	Type       string
 	Chromosome string
 	Start      uint64
 	End        uint64

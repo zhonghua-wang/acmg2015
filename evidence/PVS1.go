@@ -53,7 +53,7 @@ func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo ma
 			return "1"
 		}
 	} else {
-		log.Printf("Transcript(%s) not in transcriptInfo\n", item["Transcript"])
+		log.Printf("Transcript(%s)of Gene(%s) not in transcriptInfo\n", item["Transcript"], item["Gene Symbol"])
 	}
 
 	return "0"

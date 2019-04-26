@@ -9,15 +9,17 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 )
 
 // os
 var (
-	ex, _  = os.Executable()
-	exPath = filepath.Dir(ex)
-	pSep   = string(os.PathSeparator)
+	ex, _ = os.Executable()
+	//exPath = filepath.Dir(ex)
+	//pSep   = string(os.PathSeparator)
 	//dbPath       = exPath + pSep + "db" + pSep
 	//templatePath = exPath + pSep + "template" + pSep
 )
@@ -36,7 +38,35 @@ var (
 	domainPfamCol   = "pfamId"
 )
 
+var columns = []string{
+	"#Chr",
+	"Start",
+	"Stop",
+	"Ref",
+	"Call",
+	"MutationName",
+	clinvarCol,
+	hgmdCol,
+}
+
 func main() {
+
+	// lite Pathgenic tabix database
+	// load ClinVar
+	if true {
+		ClinVarPathgenicLite := FindPathogenic(clinvarAnno, isPathogenic, clinvarCol, evidence.IsClinVarPLP, columns)
+		sort.Sort(Bed(ClinVarPathgenicLite))
+		f, err := os.Create("ClinVarPathgenicLite.bed")
+		simple_util.CheckErr(err)
+		defer simple_util.DeferClose(f)
+
+		_, err = fmt.Fprintln(f, strings.Join(columns, "\t"))
+		simple_util.CheckErr(err)
+		for _, item := range ClinVarPathgenicLite {
+			_, err = fmt.Fprintln(f, strings.Join(item, "\t"))
+			simple_util.CheckErr(err)
+		}
+	}
 
 	// spec.var.list anno clinvar hgmd
 	if false {
@@ -112,33 +142,36 @@ func main() {
 	if false {
 		simple_util.DownloadFileProgress(genomcGffFile, genomicGffUrl)
 	}
-	var genomicGFF = parseGff3.File2GFF3array(genomcGffFile)
-	acce2chr := simple_util.JsonFile2Map("accession2chr.json")
-	var RSGregion = make(map[string][]evidence.Region)
-	for _, item := range genomicGFF {
-		if item.Type != "transcript" {
-			continue
+	if false {
+		var genomicGFF = parseGff3.File2GFF3array(genomcGffFile)
+		acce2chr := simple_util.JsonFile2Map("accession2chr.json")
+		var RSGregion = make(map[string][]evidence.Region)
+		for _, item := range genomicGFF {
+			if item.Type != "transcript" && item.Type != "mRNA" {
+				continue
+			}
+			var region = new(evidence.Region)
+			region.Seqid = item.Seqid
+			region.Type = item.Type
+			region.Chromosome = acce2chr[region.Seqid]
+			if region.Chromosome == "" {
+				continue
+			}
+			region.Start = item.Start
+			region.End = item.End
+			region.Strand = item.Strand
+			region.Gene = item.Attributes["gene"]
+			name := item.Attributes["Name"]
+			old, ok := RSGregion[name]
+			if ok {
+				log.Printf("Duplicate Transcript(%s):\t%+v vs. %+v", name, old, *region)
+			} else {
+			}
+			RSGregion[name] = append(RSGregion[name], *region)
 		}
-		var region = new(evidence.Region)
-		region.Seqid = item.Seqid
-		region.Chromosome = acce2chr[region.Seqid]
-		if region.Chromosome == "" {
-			continue
-		}
-		region.Start = item.Start
-		region.End = item.End
-		region.Strand = item.Strand
-		region.Gene = item.Attributes["gene"]
-		name := item.Attributes["Name"]
-		old, ok := RSGregion[name]
-		if ok {
-			log.Printf("Duplicate Transcript(%s):\t%+v vs. %+v", name, old, *region)
-		} else {
-		}
-		RSGregion[name] = append(RSGregion[name], *region)
+		err := simple_util.Json2File("transcript.info.json", RSGregion)
+		simple_util.CheckErr(err)
 	}
-	err := simple_util.Json2File("transcript.info.json", RSGregion)
-	simple_util.CheckErr(err)
 
 	// build PVS1 db
 	if false {
@@ -185,9 +218,17 @@ func main() {
 		var item = map[string]string{
 			"Function":    "splice-3",
 			"Gene Symbol": "ACD",
+			"Start":       "67693132",
+			"#Chr":        "16",
+			"Transcript":  "NM_001082486.1",
 		}
 		LOFIntoleranceGeneList := simple_util.JsonFile2MapInt("LOFIntoleranceGeneList.json")
-		fmt.Println("PVS1", evidence.CheckPVS1(item, LOFIntoleranceGeneList))
+		var transcriptInfo map[string][]evidence.Region
+		b, err := ioutil.ReadFile("transcript.info.json")
+		simple_util.CheckErr(err)
+		err = json.Unmarshal(b, &transcriptInfo)
+		simple_util.CheckErr(err)
+		fmt.Println("PVS1", evidence.CheckPVS1(item, LOFIntoleranceGeneList, transcriptInfo))
 	}
 
 	// build PS1/PM5 db
@@ -401,4 +442,88 @@ func main() {
 		simple_util.CheckErr(err)
 		simple_util.Json2file(jsonByte, "HgmdGenePathogenicLoFRatio.json")
 	}
+}
+
+type filterRule func(item map[string]string, key string, filter *regexp.Regexp) bool
+
+func isPathogenic(item map[string]string, key string, filter *regexp.Regexp) bool {
+	if filter.MatchString(item[key]) {
+		return true
+	}
+	return false
+}
+
+func FindPathogenic(fileName string, filterPathgenic filterRule, key string, filter *regexp.Regexp, keyList []string) (mapArray [][]string) {
+	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
+	for _, item := range itemArray {
+		var lite []string
+		if !filterPathgenic(item, key, filter) {
+			continue
+		}
+		for _, key := range keyList {
+			lite = append(lite, item[key])
+		}
+		mapArray = append(mapArray, lite)
+	}
+	return
+}
+
+func chr2int(chromosome string) int {
+	chr := strings.Replace(chromosome, "chr", "", -1)
+	i, err := strconv.Atoi(chr)
+	if err == nil {
+		return i
+	} else if chr == "X" {
+		return 23
+	} else if chr == "Y" {
+		return 24
+	}
+	return 25
+}
+
+func compareIntString(a, b string) int {
+	if a == b {
+		return 0
+	}
+	i, err1 := strconv.Atoi(a)
+	j, err2 := strconv.Atoi(b)
+	if err1 != nil && err2 != nil {
+		if i == j {
+			return 0
+		} else {
+			return i - j
+		}
+	} else {
+		return strings.Compare(a, b)
+	}
+}
+
+type Bed [][]string
+
+func (a Bed) Len() int      { return len(a) }
+func (a Bed) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a Bed) Less(i, j int) bool {
+	chr1 := a[i][0]
+	chr2 := a[j][0]
+	if chr1 != chr2 {
+		return chr2int(chr1) < chr2int(chr2)
+	}
+	start1 := a[i][1]
+	start2 := a[j][1]
+
+	gt := compareIntString(start1, start2)
+	if gt < 0 {
+		return true
+	} else if gt > 0 {
+		return false
+	}
+	stop1 := a[i][2]
+	stop2 := a[j][2]
+	gt = compareIntString(stop1, stop2)
+	if gt < 0 {
+		return true
+	} else if gt > 0 {
+		return false
+	}
+	return false
 }
