@@ -33,8 +33,6 @@ var PVS1AFlist = []string{
 	"ESP6500 AF",
 	"ExAC EAS AF",
 	"ExAC AF",
-	"PVFD AF",
-	"Panel AlleleFreq",
 }
 
 func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region) string {
