@@ -29,7 +29,6 @@ func CheckBP4(item map[string]string) string {
 	} else {
 		if isP.MatchString(item["SIFT Pred"]) &&
 			isP.MatchString(item["Polyphen2 HVAR Pred"]) &&
-			isP.MatchString(item["Polyphen2 HDIV Pred"]) &&
 			isP.MatchString(item["MutationTaster Pred"]) &&
 			isNeutral.MatchString(item["Ens Condel Pred"]) {
 			return "1"
@@ -61,7 +60,6 @@ func CompareBP4(item map[string]string, lostOnly bool) {
 				"dbscSNV_ADA_pred",
 				"SIFT Pred",
 				"Polyphen2 HVAR Pred",
-				"Polyphen2 HDIV Pred",
 				"MutationTaster Pred",
 				"Ens Condel Pred",
 			)
