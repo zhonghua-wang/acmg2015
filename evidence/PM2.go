@@ -9,7 +9,7 @@ var (
 )
 
 var (
-	PM2ARAFThreshold = 0.05
+	PM2ARAFThreshold = 0.005
 	PM2ADAFThreshold = 0.0
 )
 
@@ -17,9 +17,9 @@ var PM2AFList = []string{
 	"ESP6500 AF",
 	"1000G AF",
 	"ExAC AF",
-	//"ExAC EAS",
+	"ExAC EAS",
 	"GnomAD AF",
-	//"GnomAD EAS AF",
+	"GnomAD EAS AF",
 }
 
 // PM2
