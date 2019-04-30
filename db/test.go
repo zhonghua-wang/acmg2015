@@ -72,8 +72,8 @@ func main() {
 		}
 	}
 
-	// spec.var.list anno clinvar hgmd
-	if false {
+	// spec.var.list anno clinvar hgmd and filter
+	if true {
 		mutList := simple_util.File2Array("spec.var.list")
 		var annotation = make(map[string]map[string]string)
 		var annoLite = make(map[string]map[string]string)
@@ -103,11 +103,19 @@ func main() {
 			clinvarCol,
 			hgmdCol,
 		}
-		file, err := os.Create("sepc.var.list.txt")
+		file, err := os.Create("spec.var.list.txt")
 		simple_util.CheckErr(err)
 		defer file.Close()
 
+		lite, err := os.Create("spec.var.list.lite.txt")
+		simple_util.CheckErr(err)
+		defer lite.Close()
+		liteList, err := os.Create("spec.var.lite.list")
+		simple_util.CheckErr(err)
+		defer liteList.Close()
+
 		fmt.Fprintln(file, strings.Join(columns, "\t"))
+		fmt.Fprintln(lite, strings.Join(columns, "\t"))
 
 		for _, key := range mutList {
 			var item = make(map[string]string)
@@ -117,6 +125,11 @@ func main() {
 				array = append(array, item[col])
 			}
 			fmt.Fprintln(file, strings.Join(array, "\t"))
+			if evidence.IsClinVarPLP.MatchString(annotation[key][clinvarCol]) || evidence.IsHgmdDM.MatchString(annotation[key][hgmdCol]) {
+				fmt.Fprintln(lite, strings.Join(array, "\t"))
+				fmt.Fprintln(liteList, key)
+			}
+
 			annoLite[key] = item
 		}
 		jsonByte, err := simple_util.JsonIndent(annoLite, "", "\t")
