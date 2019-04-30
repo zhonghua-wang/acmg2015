@@ -50,6 +50,10 @@ var columns = []string{
 }
 
 func main() {
+	l, err := os.Create("log")
+	simple_util.CheckErr(err)
+	defer simple_util.DeferClose(l)
+	log.SetOutput(l)
 
 	// lite Pathgenic tabix database
 	// load ClinVar
@@ -285,6 +289,178 @@ func main() {
 	}
 
 	// build PM1 db
+	if false {
+		var ClinVarPathogenicDomain = evidence.FindPM1MutationDomain(clinvarAnno, evidence.FilterPathogenic)
+		jsonByte, err := simple_util.JsonIndent(ClinVarPathogenicDomain, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarPathogenicDomain.json")
+
+		var HGMDPathogenicDomain = evidence.FindPM1MutationDomain(hgmdAnno, evidence.FilterPathogenic)
+		jsonByte, err = simple_util.JsonIndent(HGMDPathogenicDomain, "", "\t")
+		simple_util.CheckErr(simple_util.Json2rawFile("HGMDPathogenicDomain.json", HGMDPathogenicDomain))
+
+		var mutationList = make(map[string]int)
+		var dbNSFPPathogenicDomain = make(map[string]int)
+		var PfamPathogenicDomain = make(map[string]int)
+
+		for mutation := range ClinVarPathogenicDomain {
+			mutationList[mutation]++
+		}
+		for mutation := range HGMDPathogenicDomain {
+			mutationList[mutation]++
+		}
+
+		simple_util.CheckErr(simple_util.Json2rawFile("PathogenicMutation.json", mutationList))
+
+		for mutation := range mutationList {
+			clinvarDomain, ok1 := ClinVarPathogenicDomain[mutation]
+			hgmdDomain, ok2 := HGMDPathogenicDomain[mutation]
+			if ok1 && ok2 {
+				if clinvarDomain[0] == hgmdDomain[0] && clinvarDomain[1] == hgmdDomain[1] {
+					for _, domain := range strings.Split(clinvarDomain[0], ";") {
+						if domain != "" && domain != "." {
+							dbNSFPPathogenicDomain[domain]++
+						}
+					}
+					for _, domain := range strings.Split(clinvarDomain[1], ";") {
+						if domain != "" && domain != "." {
+							PfamPathogenicDomain[domain]++
+						}
+					}
+				} else {
+					log.Printf("[Conflicet Domain:%v vs. %v]\n", clinvarDomain, hgmdDomain)
+				}
+			} else if ok1 {
+				for _, domain := range strings.Split(clinvarDomain[0], ";") {
+					if domain != "" && domain != "." {
+						dbNSFPPathogenicDomain[domain]++
+					}
+				}
+				for _, domain := range strings.Split(clinvarDomain[1], ";") {
+					if domain != "" && domain != "." {
+						PfamPathogenicDomain[domain]++
+					}
+				}
+			} else if ok2 {
+				for _, domain := range strings.Split(hgmdDomain[0], ";") {
+					if domain != "" && domain != "." {
+						dbNSFPPathogenicDomain[domain]++
+					}
+				}
+				for _, domain := range strings.Split(hgmdDomain[1], ";") {
+					if domain != "" && domain != "." {
+						PfamPathogenicDomain[domain]++
+					}
+				}
+			}
+		}
+		simple_util.CheckErr(simple_util.Json2rawFile("dbNSFPPathogenicDomain.json", dbNSFPPathogenicDomain))
+		simple_util.CheckErr(simple_util.Json2rawFile("PfamPathogenicDomain.json", PfamPathogenicDomain))
+	}
+	if false {
+		var ClinVarBenignDomain = evidence.FindPM1MutationDomain(clinvarAnno, evidence.FilterBenign)
+		jsonByte, err := simple_util.JsonIndent(ClinVarBenignDomain, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "ClinVarBenignDomain.json")
+
+		var HGMDBenignDomain = evidence.FindPM1MutationDomain(hgmdAnno, evidence.FilterBenign)
+		jsonByte, err = simple_util.JsonIndent(HGMDBenignDomain, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(jsonByte, "HGMDBenignDomain.json")
+
+		var mutationList = make(map[string]int)
+		var dbNSFPBenignDomain = make(map[string]int)
+		var PfamBenignDomain = make(map[string]int)
+
+		for mutation := range ClinVarBenignDomain {
+			mutationList[mutation]++
+		}
+		for mutation := range HGMDBenignDomain {
+			mutationList[mutation]++
+		}
+
+		simple_util.Json2File("BenignMutation.json", mutationList)
+		for mutation := range mutationList {
+			clinvarDomain, ok1 := ClinVarBenignDomain[mutation]
+			hgmdDomain, ok2 := HGMDBenignDomain[mutation]
+			if ok1 && ok2 {
+				if clinvarDomain[0] == hgmdDomain[0] && clinvarDomain[1] == hgmdDomain[1] {
+					for _, domain := range strings.Split(clinvarDomain[0], ";") {
+						if domain != "" && domain != "." {
+							dbNSFPBenignDomain[domain]++
+						}
+					}
+					for _, domain := range strings.Split(clinvarDomain[1], ";") {
+						if domain != "" && domain != "." {
+							PfamBenignDomain[domain]++
+						}
+					}
+				} else {
+					log.Printf("[Conflicet Domain:%v vs. %v]\n", clinvarDomain, hgmdDomain)
+				}
+			} else if ok1 {
+				for _, domain := range strings.Split(clinvarDomain[0], ";") {
+					if domain != "" && domain != "." {
+						dbNSFPBenignDomain[domain]++
+					}
+				}
+				for _, domain := range strings.Split(clinvarDomain[1], ";") {
+					if domain != "" && domain != "." {
+						PfamBenignDomain[domain]++
+					}
+				}
+			} else if ok2 {
+				for _, domain := range strings.Split(hgmdDomain[0], ";") {
+					if domain != "" && domain != "." {
+						dbNSFPBenignDomain[domain]++
+					}
+				}
+				for _, domain := range strings.Split(hgmdDomain[1], ";") {
+					if domain != "" && domain != "." {
+						PfamBenignDomain[domain]++
+					}
+				}
+			}
+		}
+		simple_util.Json2rawFile("dbNSFPBenignDomain.json", dbNSFPBenignDomain)
+		simple_util.Json2rawFile("PfamBenignDomain.json", PfamBenignDomain)
+	}
+	if true {
+		var dbNSFPPathogenicDomain = make(map[string]int)
+		var dbNSFPBenignDomain = make(map[string]int)
+		var PfamPathogenicDomain = make(map[string]int)
+		var PfamBenignDomain = make(map[string]int)
+		simple_util.JsonFile2Data("dbNSFPPathogenicDomain.json", dbNSFPPathogenicDomain)
+		simple_util.JsonFile2Data("dbNSFPBenignDomain.json", dbNSFPBenignDomain)
+		simple_util.JsonFile2Data("PfamPathogenicDomain.json", PfamPathogenicDomain)
+		simple_util.JsonFile2Data("PfamBenignDomain.json", PfamBenignDomain)
+
+		var PM1dbNSFPDomain = make(map[string]bool)
+		var PM1PfamDomain = make(map[string]bool)
+		for domain, count := range dbNSFPPathogenicDomain {
+			if count >= 2 {
+				PM1dbNSFPDomain[domain] = true
+			}
+		}
+		for domain, count := range dbNSFPBenignDomain {
+			if count > 0 {
+				PM1dbNSFPDomain[domain] = false
+			}
+		}
+		for domain, count := range PfamPathogenicDomain {
+			if count >= 2 {
+				PM1PfamDomain[domain] = true
+			}
+		}
+		for domain, count := range PfamBenignDomain {
+			if count > 0 {
+				PM1PfamDomain[domain] = false
+			}
+		}
+		simple_util.CheckErr(simple_util.Json2rawFile("PM1dbNSFPDomain.json", PM1PfamDomain))
+		simple_util.CheckErr(simple_util.Json2rawFile("PM1dbNSFPDomain.json", PM1PfamDomain))
+	}
+
 	// load ClinVar
 	if false {
 		var ClinVarPathogenicDomainDbNSFP = evidence.FindDomain(clinvarAnno, domainDbNSFPCol, clinvarCol, evidence.IsClinVarPLP)
