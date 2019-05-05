@@ -32,10 +32,8 @@ var (
 
 // colname
 var (
-	clinvarCol      = "ClinVar Significance"
-	hgmdCol         = "HGMD Pred"
-	domainDbNSFPCol = "Interpro_domain"
-	domainPfamCol   = "pfamId"
+	clinvarCol = "ClinVar Significance"
+	hgmdCol    = "HGMD Pred"
 )
 
 var columns = []string{
@@ -56,14 +54,52 @@ func main() {
 	log.SetOutput(l)
 
 	// lite Pathgenic tabix database
-	// load ClinVar
-	if false {
+	if true {
+		// load ClinVar
 		ClinVarPathgenicLite := FindPathogenic(clinvarAnno, isPathogenic, clinvarCol, evidence.IsClinVarPLP, columns)
 		sort.Sort(Bed(ClinVarPathgenicLite))
-		f, err := os.Create("ClinVarPathgenicLite.bed")
+		f1, err := os.Create("ClinVarPathgenicLite.bed")
+		simple_util.CheckErr(err)
+		defer simple_util.DeferClose(f1)
+
+		_, err = fmt.Fprintln(f1, strings.Join(columns, "\t"))
+		simple_util.CheckErr(err)
+		for _, item := range ClinVarPathgenicLite {
+			_, err = fmt.Fprintln(f1, strings.Join(item, "\t"))
+			simple_util.CheckErr(err)
+		}
+
+		// load HGMD
+		HgmdPathgenicLite := FindPathogenic(hgmdAnno, isPathogenic, hgmdCol, evidence.IsHgmdDM, columns)
+		sort.Sort(Bed(HgmdPathgenicLite))
+		f2, err := os.Create("HgmdPathgenicLite.bed")
+		simple_util.CheckErr(err)
+		defer simple_util.DeferClose(f2)
+
+		_, err = fmt.Fprintln(f2, strings.Join(columns, "\t"))
+		simple_util.CheckErr(err)
+		for _, item := range HgmdPathgenicLite {
+			_, err = fmt.Fprintln(f2, strings.Join(item, "\t"))
+			simple_util.CheckErr(err)
+		}
+
+		// merge ClinVar and HGMD
+		var dup = make(map[string]bool)
+		for _, item := range ClinVarPathgenicLite {
+			var key = strings.Join(item[0:5], "\t")
+			dup[key] = true
+		}
+		for _, item := range HgmdPathgenicLite {
+			var key = strings.Join(item[0:5], "\t")
+			if dup[key] {
+				continue
+			}
+			ClinVarPathgenicLite = append(ClinVarPathgenicLite, item)
+		}
+		sort.Sort(Bed(ClinVarPathgenicLite))
+		f, err := os.Create("PathgenicLite.bed")
 		simple_util.CheckErr(err)
 		defer simple_util.DeferClose(f)
-
 		_, err = fmt.Fprintln(f, strings.Join(columns, "\t"))
 		simple_util.CheckErr(err)
 		for _, item := range ClinVarPathgenicLite {
