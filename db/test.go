@@ -622,6 +622,22 @@ func chr2int(chromosome string) int {
 	return 26
 }
 
+func compareChr(chr1, chr2 string) bool {
+	chr1 = strings.Replace(chr1, "chr", "", 1)
+	chr2 = strings.Replace(chr2, "chr", "", 1)
+	if chr1 == chr2 {
+		return false
+	}
+	chr1Int := chr2int(chr1)
+	chr2Int := chr2int(chr2)
+	if chr1Int == 26 && chr2Int == 26 {
+		return strings.Compare(chr1, chr2) < 0
+	} else {
+		return chr1Int < chr2Int
+	}
+
+}
+
 func compareIntString(a, b string) int {
 	if a == b {
 		return 0
@@ -647,7 +663,7 @@ func (a Bed) Less(i, j int) bool {
 	chr1 := a[i][0]
 	chr2 := a[j][0]
 	if chr1 != chr2 {
-		return chr2int(chr1) < chr2int(chr2)
+		return compareChr(chr1, chr2)
 	}
 
 	start1, err := strconv.Atoi(a[i][1])
