@@ -647,22 +647,26 @@ func (a Bed) Less(i, j int) bool {
 	if chr1 != chr2 {
 		return chr2int(chr1) < chr2int(chr2)
 	}
-	start1 := a[i][1]
-	start2 := a[j][1]
 
-	gt := compareIntString(start1, start2)
-	if gt < 0 {
+	start1, err := strconv.Atoi(a[i][1])
+	simple_util.CheckErr(err)
+	start2, err := strconv.Atoi(a[j][1])
+	simple_util.CheckErr(err)
+	if start1 < start2 {
 		return true
-	} else if gt > 0 {
+	} else if start1 > start2 {
 		return false
 	}
-	stop1 := a[i][2]
-	stop2 := a[j][2]
-	gt = compareIntString(stop1, stop2)
-	if gt < 0 {
+
+	stop1, err := strconv.Atoi(a[i][1])
+	simple_util.CheckErr(err)
+	stop2, err := strconv.Atoi(a[j][1])
+	simple_util.CheckErr(err)
+	if stop1 < stop2 {
 		return true
-	} else if gt > 0 {
+	} else if stop1 > stop2 {
 		return false
 	}
+
 	return false
 }
