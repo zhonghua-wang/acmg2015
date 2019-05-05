@@ -84,9 +84,14 @@ func main() {
 		}
 
 		// merge ClinVar and HGMD
+		var merge [][]string
 		var dup = make(map[string]bool)
 		for _, item := range ClinVarPathogenicLite {
 			var key = strings.Join(item[0:5], "\t")
+			if dup[key] {
+				continue
+			}
+			merge = append(merge, item)
 			dup[key] = true
 		}
 		for _, item := range HgmdPathogenicLite {
@@ -94,15 +99,16 @@ func main() {
 			if dup[key] {
 				continue
 			}
-			ClinVarPathogenicLite = append(ClinVarPathogenicLite, item)
+			merge = append(merge, item)
+			dup[key] = true
 		}
-		sort.Sort(Bed(ClinVarPathogenicLite))
+		sort.Sort(Bed(merge))
 		f, err := os.Create("PathogenicLite.bed")
 		simple_util.CheckErr(err)
 		defer simple_util.DeferClose(f)
 		_, err = fmt.Fprintln(f, strings.Join(columns, "\t"))
 		simple_util.CheckErr(err)
-		for _, item := range ClinVarPathogenicLite {
+		for _, item := range merge {
 			_, err = fmt.Fprintln(f, strings.Join(item, "\t"))
 			simple_util.CheckErr(err)
 		}
