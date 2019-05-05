@@ -74,6 +74,8 @@ func main() {
 
 	// spec.var.list anno clinvar hgmd and filter
 	if true {
+		mutYzyList := simple_util.File2Array("spec.var.yzy.list")
+		var yzyCover = make(map[string]bool)
 		mutList := simple_util.File2Array("spec.var.list")
 		var annotation = make(map[string]map[string]string)
 		var annoLite = make(map[string]map[string]string)
@@ -128,9 +130,15 @@ func main() {
 			if evidence.IsClinVarPLP.MatchString(annotation[key][clinvarCol]) || evidence.IsHgmdDM.MatchString(annotation[key][hgmdCol]) {
 				fmt.Fprintln(lite, strings.Join(array, "\t"))
 				fmt.Fprintln(liteList, key)
+				yzyCover[key] = true
 			}
-
 			annoLite[key] = item
+		}
+		for _, key := range mutYzyList {
+			if !yzyCover[key] {
+				fmt.Printf("%s\t[%v]\n", key, annoLite[key])
+				fmt.Fprintln(liteList, key)
+			}
 		}
 		jsonByte, err := simple_util.JsonIndent(annoLite, "", "\t")
 		simple_util.CheckErr(err)
@@ -438,7 +446,7 @@ func main() {
 		simple_util.Json2rawFile("dbNSFPBenignDomain.json", dbNSFPBenignDomain)
 		simple_util.Json2rawFile("PfamBenignDomain.json", PfamBenignDomain)
 	}
-	if true {
+	if false {
 		var dbNSFPPathogenicDomain = make(map[string]int)
 		var dbNSFPBenignDomain = make(map[string]int)
 		var PfamPathogenicDomain = make(map[string]int)
