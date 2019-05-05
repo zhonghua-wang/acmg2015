@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/brentp/bix"
+	"github.com/brentp/irelate/interfaces"
 	"github.com/liserjrqlxue/acmg2015/evidence"
 	"github.com/liserjrqlxue/parse-gff3"
 	"github.com/liserjrqlxue/simple-util"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -54,7 +57,7 @@ func main() {
 	log.SetOutput(l)
 
 	// lite Pathgenic tabix database
-	if true {
+	if false {
 		// load ClinVar
 		ClinVarPathogenicLite := FindPathogenic(clinvarAnno, isPathogenic, clinvarCol, evidence.IsClinVarPLP, columns)
 		sort.Sort(Bed(ClinVarPathogenicLite))
@@ -111,6 +114,22 @@ func main() {
 		for _, item := range merge {
 			_, err = fmt.Fprintln(f, strings.Join(item, "\t"))
 			simple_util.CheckErr(err)
+		}
+	}
+
+	// test bix
+	if true {
+		tbx, err := bix.New("PathogenicLite.bed.gz")
+		simple_util.CheckErr(err, "load tabix")
+		// Query returns an io.Reader
+		rdr, err := tbx.Query(interfaces.AsIPosition("1", 949522, 949523))
+		for {
+			v, err := rdr.Next()
+			if err == io.EOF {
+				break
+			}
+			simple_util.CheckErr(err, "rdr.Next()")
+			fmt.Printf("%+v\n", v)
 		}
 	}
 
