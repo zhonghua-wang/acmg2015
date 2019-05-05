@@ -62,28 +62,6 @@ func FindPM1MutationDomain(fileName string, filter filterFunc) (mutationDomain m
 	return
 }
 
-func FindDomain(fileName, key, filterKey string, filter *regexp.Regexp) map[string]int {
-	var DomainCount = make(map[string]int)
-	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
-	for _, item := range itemArray {
-		if !filter.MatchString(item[filterKey]) {
-			continue
-		}
-		domain := item[key]
-		if domain == "" || domain == "." {
-			continue
-		}
-		domains := strings.Split(domain, ";")
-		for _, d := range domains {
-			if d == "" || d == "." {
-				continue
-			}
-			DomainCount[d]++
-		}
-	}
-	return DomainCount
-}
-
 // PM1
 func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) string {
 	if !isMissenseIndel.MatchString(item["Function"]) {
