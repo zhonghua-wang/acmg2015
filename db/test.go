@@ -56,53 +56,53 @@ func main() {
 	// lite Pathgenic tabix database
 	if true {
 		// load ClinVar
-		ClinVarPathgenicLite := FindPathogenic(clinvarAnno, isPathogenic, clinvarCol, evidence.IsClinVarPLP, columns)
-		sort.Sort(Bed(ClinVarPathgenicLite))
-		f1, err := os.Create("ClinVarPathgenicLite.bed")
+		ClinVarPathogenicLite := FindPathogenic(clinvarAnno, isPathogenic, clinvarCol, evidence.IsClinVarPLP, columns)
+		sort.Sort(Bed(ClinVarPathogenicLite))
+		f1, err := os.Create("ClinVarPathogenicLite.bed")
 		simple_util.CheckErr(err)
 		defer simple_util.DeferClose(f1)
 
 		_, err = fmt.Fprintln(f1, strings.Join(columns, "\t"))
 		simple_util.CheckErr(err)
-		for _, item := range ClinVarPathgenicLite {
+		for _, item := range ClinVarPathogenicLite {
 			_, err = fmt.Fprintln(f1, strings.Join(item, "\t"))
 			simple_util.CheckErr(err)
 		}
 
 		// load HGMD
-		HgmdPathgenicLite := FindPathogenic(hgmdAnno, isPathogenic, hgmdCol, evidence.IsHgmdDM, columns)
-		sort.Sort(Bed(HgmdPathgenicLite))
-		f2, err := os.Create("HgmdPathgenicLite.bed")
+		HgmdPathogenicLite := FindPathogenic(hgmdAnno, isPathogenic, hgmdCol, evidence.IsHgmdDM, columns)
+		sort.Sort(Bed(HgmdPathogenicLite))
+		f2, err := os.Create("HgmdPathogenicLite.bed")
 		simple_util.CheckErr(err)
 		defer simple_util.DeferClose(f2)
 
 		_, err = fmt.Fprintln(f2, strings.Join(columns, "\t"))
 		simple_util.CheckErr(err)
-		for _, item := range HgmdPathgenicLite {
+		for _, item := range HgmdPathogenicLite {
 			_, err = fmt.Fprintln(f2, strings.Join(item, "\t"))
 			simple_util.CheckErr(err)
 		}
 
 		// merge ClinVar and HGMD
 		var dup = make(map[string]bool)
-		for _, item := range ClinVarPathgenicLite {
+		for _, item := range ClinVarPathogenicLite {
 			var key = strings.Join(item[0:5], "\t")
 			dup[key] = true
 		}
-		for _, item := range HgmdPathgenicLite {
+		for _, item := range HgmdPathogenicLite {
 			var key = strings.Join(item[0:5], "\t")
 			if dup[key] {
 				continue
 			}
-			ClinVarPathgenicLite = append(ClinVarPathgenicLite, item)
+			ClinVarPathogenicLite = append(ClinVarPathogenicLite, item)
 		}
-		sort.Sort(Bed(ClinVarPathgenicLite))
-		f, err := os.Create("PathgenicLite.bed")
+		sort.Sort(Bed(ClinVarPathogenicLite))
+		f, err := os.Create("PathogenicLite.bed")
 		simple_util.CheckErr(err)
 		defer simple_util.DeferClose(f)
 		_, err = fmt.Fprintln(f, strings.Join(columns, "\t"))
 		simple_util.CheckErr(err)
-		for _, item := range ClinVarPathgenicLite {
+		for _, item := range ClinVarPathogenicLite {
 			_, err = fmt.Fprintln(f, strings.Join(item, "\t"))
 			simple_util.CheckErr(err)
 		}
