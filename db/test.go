@@ -616,8 +616,10 @@ func chr2int(chromosome string) int {
 		return 23
 	} else if chr == "Y" {
 		return 24
+	} else if chr == "MT" {
+		return 25
 	}
-	return 25
+	return 26
 }
 
 func compareIntString(a, b string) int {
