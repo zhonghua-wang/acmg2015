@@ -43,6 +43,9 @@ func FindPM1MutationDomain(fileName string, filter filterFunc) (mutationDomain m
 		if !filter(item) {
 			continue
 		}
+		if !isMissenseIndel.MatchString(item["Function"]) {
+			continue
+		}
 		var domains []string
 		for _, col := range []string{domainDbNSFPCol, domainPfamCol} {
 			domains = append(domains, item[col])
@@ -82,21 +85,35 @@ func FindDomain(fileName, key, filterKey string, filter *regexp.Regexp) map[stri
 }
 
 // PM1
-func CheckPM1(item map[string]string, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HGMDPfam map[string]int) string {
+func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) string {
 	if !isMissenseIndel.MatchString(item["Function"]) {
-		return ""
+		return "0"
 	}
 	var dbNSFP = item["Interpro_domain"]
 	var pfam = item["pfamId"]
-	if ClinVarDbNSFP[dbNSFP] > 0 || ClinVarPfam[pfam] > 0 || HGMDDbNSFP[dbNSFP] > 0 || HGMDPfam[pfam] > 0 {
+	var flag bool
+
+	for _, k := range strings.Split(dbNSFP, ";") {
+		if dbNSFPDomain[k] {
+			flag = true
+		}
+	}
+	for _, k := range strings.Split(pfam, ";") {
+		if PfamDomain[k] {
+			flag = true
+		}
+	}
+	if flag {
 		return "1"
+	} else {
+		return "0"
 	}
 	return "0"
 }
 
-func ComparePM1(item map[string]string, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HGMDPfam map[string]int) {
+func ComparePM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) {
 	rule := "PM1"
-	val := CheckPM1(item, ClinVarDbNSFP, ClinVarPfam, HGMDDbNSFP, HGMDPfam)
+	val := CheckPM1(item, dbNSFPDomain, PfamDomain)
 	if val != item[rule] {
 		PrintConflict(item, rule, val, "Interpro_domain", "pfamId")
 	}
