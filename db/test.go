@@ -57,7 +57,7 @@ func main() {
 
 	// lite Pathgenic tabix database
 	// load ClinVar
-	if true {
+	if false {
 		ClinVarPathgenicLite := FindPathogenic(clinvarAnno, isPathogenic, clinvarCol, evidence.IsClinVarPLP, columns)
 		sort.Sort(Bed(ClinVarPathgenicLite))
 		f, err := os.Create("ClinVarPathgenicLite.bed")
@@ -73,7 +73,7 @@ func main() {
 	}
 
 	// spec.var.list anno clinvar hgmd and filter
-	if true {
+	if false {
 		mutYzyList := simple_util.File2Array("spec.var.yzy.list")
 		var yzyCover = make(map[string]bool)
 		mutList := simple_util.File2Array("spec.var.list")
@@ -310,7 +310,7 @@ func main() {
 	}
 
 	// build PM1 db
-	if false {
+	if true {
 		var ClinVarPathogenicDomain = evidence.FindPM1MutationDomain(clinvarAnno, evidence.FilterPathogenic)
 		jsonByte, err := simple_util.JsonIndent(ClinVarPathogenicDomain, "", "\t")
 		simple_util.CheckErr(err)
@@ -378,7 +378,7 @@ func main() {
 		simple_util.CheckErr(simple_util.Json2rawFile("dbNSFPPathogenicDomain.json", dbNSFPPathogenicDomain))
 		simple_util.CheckErr(simple_util.Json2rawFile("PfamPathogenicDomain.json", PfamPathogenicDomain))
 	}
-	if false {
+	if true {
 		var ClinVarBenignDomain = evidence.FindPM1MutationDomain(clinvarAnno, evidence.FilterBenign)
 		jsonByte, err := simple_util.JsonIndent(ClinVarBenignDomain, "", "\t")
 		simple_util.CheckErr(err)
@@ -446,18 +446,19 @@ func main() {
 		simple_util.Json2rawFile("dbNSFPBenignDomain.json", dbNSFPBenignDomain)
 		simple_util.Json2rawFile("PfamBenignDomain.json", PfamBenignDomain)
 	}
-	if false {
+	if true {
 		var dbNSFPPathogenicDomain = make(map[string]int)
 		var dbNSFPBenignDomain = make(map[string]int)
 		var PfamPathogenicDomain = make(map[string]int)
 		var PfamBenignDomain = make(map[string]int)
-		simple_util.JsonFile2Data("dbNSFPPathogenicDomain.json", dbNSFPPathogenicDomain)
-		simple_util.JsonFile2Data("dbNSFPBenignDomain.json", dbNSFPBenignDomain)
-		simple_util.JsonFile2Data("PfamPathogenicDomain.json", PfamPathogenicDomain)
-		simple_util.JsonFile2Data("PfamBenignDomain.json", PfamBenignDomain)
+		dbNSFPPathogenicDomain = simple_util.JsonFile2MapInt("dbNSFPPathogenicDomain.json")
+		dbNSFPBenignDomain = simple_util.JsonFile2MapInt("dbNSFPBenignDomain.json")
+		PfamPathogenicDomain = simple_util.JsonFile2MapInt("PfamPathogenicDomain.json")
+		PfamBenignDomain = simple_util.JsonFile2MapInt("PfamBenignDomain.json")
 
 		var PM1dbNSFPDomain = make(map[string]bool)
 		var PM1PfamDomain = make(map[string]bool)
+
 		for domain, count := range dbNSFPPathogenicDomain {
 			if count >= 2 {
 				PM1dbNSFPDomain[domain] = true
@@ -468,6 +469,7 @@ func main() {
 				PM1dbNSFPDomain[domain] = false
 			}
 		}
+
 		for domain, count := range PfamPathogenicDomain {
 			if count >= 2 {
 				PM1PfamDomain[domain] = true
@@ -478,8 +480,9 @@ func main() {
 				PM1PfamDomain[domain] = false
 			}
 		}
-		simple_util.CheckErr(simple_util.Json2rawFile("PM1dbNSFPDomain.json", PM1PfamDomain))
-		simple_util.CheckErr(simple_util.Json2rawFile("PM1dbNSFPDomain.json", PM1PfamDomain))
+
+		simple_util.CheckErr(simple_util.Json2rawFile("PM1PfamDomain.json", PM1PfamDomain))
+		simple_util.CheckErr(simple_util.Json2rawFile("PM1dbNSFPDomain.json", PM1dbNSFPDomain))
 	}
 
 	// load ClinVar
