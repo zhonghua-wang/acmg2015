@@ -1,9 +1,13 @@
 package evidence
 
 import (
+	"github.com/brentp/bix"
+	"github.com/brentp/irelate/interfaces"
 	"github.com/liserjrqlxue/simple-util"
+	"io"
 	"log"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -62,8 +66,21 @@ func FindPM1MutationDomain(fileName string, filter filterFunc) (mutationDomain m
 	return
 }
 
+func countBix(tbx *bix.Bix, chr string, start, end int) (n int) {
+	rdr, err := tbx.Query(interfaces.AsIPosition(chr, start, end))
+	simple_util.CheckErr(err)
+	for {
+		_, err := rdr.Next()
+		if err == io.EOF {
+			break
+		}
+		n++
+	}
+	return n
+}
+
 // PM1
-func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) string {
+func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool, tbx *bix.Bix) string {
 	if !isMissenseIndel.MatchString(item["Function"]) {
 		return "0"
 	}
@@ -81,6 +98,17 @@ func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) 
 			flag = true
 		}
 	}
+	if !flag {
+		chr := strings.Replace(item["#Chr"], "chr", "", 1)
+		start, err := strconv.Atoi(item["Start"])
+		simple_util.CheckErr(err)
+		end, err := strconv.Atoi(item["Stop"])
+		simple_util.CheckErr(err)
+		n := countBix(tbx, chr, start-10, end+10)
+		if n >= 2 {
+			flag = true
+		}
+	}
 	if flag {
 		return "1"
 	} else {
@@ -89,9 +117,9 @@ func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) 
 	return "0"
 }
 
-func ComparePM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool) {
+func ComparePM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool, tbx *bix.Bix) {
 	rule := "PM1"
-	val := CheckPM1(item, dbNSFPDomain, PfamDomain)
+	val := CheckPM1(item, dbNSFPDomain, PfamDomain, tbx)
 	if val != item[rule] {
 		PrintConflict(item, rule, val, "Interpro_domain", "pfamId")
 	}

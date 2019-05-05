@@ -123,13 +123,15 @@ func main() {
 		simple_util.CheckErr(err, "load tabix")
 		// Query returns an io.Reader
 		rdr, err := tbx.Query(interfaces.AsIPosition("1", 949522, 949523))
+		simple_util.CheckErr(err)
 		for {
 			v, err := rdr.Next()
+			fmt.Printf("%+v\n", v)
+
 			if err == io.EOF {
 				break
 			}
 			simple_util.CheckErr(err, "rdr.Next()")
-			fmt.Printf("%+v\n", v)
 		}
 	}
 
