@@ -1,7 +1,10 @@
 package evidence
 
 import (
+	"github.com/brentp/bix"
+	"github.com/brentp/irelate/interfaces"
 	"github.com/liserjrqlxue/simple-util"
+	"io"
 	"log"
 	"regexp"
 	"strconv"
@@ -35,7 +38,7 @@ var PVS1AFlist = []string{
 	"ExAC AF",
 }
 
-func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region) string {
+func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region, tbx *bix.Bix) string {
 	if FuncInfo[item["Function"]] < 3 {
 		return "0"
 	}
@@ -47,7 +50,7 @@ func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo ma
 	}
 	regions, ok := transcriptInfo[item["Transcript"]]
 	if ok {
-		if CheckOtherPathogenic(item, regions) {
+		if CheckOtherPathogenic(tbx, item, regions) {
 			return "1"
 		}
 	} else {
@@ -57,9 +60,9 @@ func CheckPVS1(item map[string]string, LOFList map[string]int, transcriptInfo ma
 	return "0"
 }
 
-func ComparePVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region) {
+func ComparePVS1(item map[string]string, LOFList map[string]int, transcriptInfo map[string][]Region, tbx *bix.Bix) {
 	rule := "PVS1"
-	val := CheckPVS1(item, LOFList, transcriptInfo)
+	val := CheckPVS1(item, LOFList, transcriptInfo, tbx)
 	if val != item[rule] {
 		if item[rule] == "0" && val == "" {
 		} else {
@@ -74,7 +77,7 @@ func CheckDomain(item map[string]string) bool {
 }
 
 // 突变位点后有其他致病突变（基于公共数据库）位点
-func CheckOtherPathogenic(item map[string]string, regions []Region) bool {
+func CheckOtherPathogenic(tbx *bix.Bix, item map[string]string, regions []Region) bool {
 	chromosome := strings.Replace(item["#Chr"], "chr", "", -1)
 	start, err := strconv.Atoi(item["Start"])
 	simple_util.CheckErr(err)
@@ -102,13 +105,23 @@ func CheckOtherPathogenic(item map[string]string, regions []Region) bool {
 		}
 	}
 	if flag {
-		return checkPathogenicOfRegion(chromosome, start, end)
+		return checkPathogenicOfRegion(tbx, chromosome, start, end)
 	} else {
 		log.Printf("can not set region after this variant:[%s]\n", item["MutationName"])
 	}
 	return false
 }
 
-func checkPathogenicOfRegion(chromosome string, start, end int) bool {
+func checkPathogenicOfRegion(tbx *bix.Bix, chromosome string, start, end int) bool {
+	rdr, err := tbx.Query(interfaces.AsIPosition(chromosome, start, end))
+	simple_util.CheckErr(err)
+	for {
+		_, err := rdr.Next()
+		if err == io.EOF {
+			break
+		}
+		simple_util.CheckErr(err)
+		return true
+	}
 	return false
 }

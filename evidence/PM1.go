@@ -74,6 +74,7 @@ func countBix(tbx *bix.Bix, chr string, start, end int) (n int) {
 		if err == io.EOF {
 			break
 		}
+		simple_util.CheckErr(err)
 		n++
 	}
 	return n
