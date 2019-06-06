@@ -38,7 +38,7 @@ func CalGeneLoFRatio(fileName, key string, filter *regexp.Regexp, threshold int)
 
 // BP1
 func CheckBP1(item map[string]string, ClinVarBP1GeneList, HgmdBP1GeneList map[string]float64) string {
-	if item["Function"] == "missense" {
+	if item["Function"] != "missense" {
 		return "0"
 	}
 	gene := item["Gene Symbol"]
