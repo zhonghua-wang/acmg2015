@@ -44,6 +44,8 @@ func CheckBP1(item map[string]string, ClinVarBP1GeneList, HgmdBP1GeneList map[st
 	gene := item["Gene Symbol"]
 	if ClinVarBP1GeneList[gene] > BP1LoFRatioThreshold || HgmdBP1GeneList[gene] > BP1LoFRatioThreshold {
 		return "1"
+	} else {
+		return "0"
 	}
 
 	return ""
