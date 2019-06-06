@@ -38,7 +38,7 @@ func CalGeneMissenseRatio(fileName, key string, filter *regexp.Regexp, threshold
 
 // PP2
 func CheckPP2(item map[string]string, ClinVarPP2GeneList, HgmdPP2GeneList map[string]float64) string {
-	if item["Function"] == "missense" {
+	if item["Function"] != "missense" {
 		return "0"
 	}
 	gene := item["Gene Symbol"]
