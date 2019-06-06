@@ -48,3 +48,11 @@ func CheckBP1(item map[string]string, ClinVarBP1GeneList, HgmdBP1GeneList map[st
 
 	return ""
 }
+
+func CompareBP1(item map[string]string, ClinVarBP1GeneList, HgmdBP1GeneList map[string]float64) {
+	rule := "BP1"
+	val := CheckBP1(item, ClinVarBP1GeneList, HgmdBP1GeneList)
+	if val != item[rule] {
+		PrintConflict(item, rule, val, "Function", "Gene Symbol")
+	}
+}
