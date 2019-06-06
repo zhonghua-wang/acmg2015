@@ -53,10 +53,10 @@ func PredACMG2015(item map[string]string) string {
 	}
 
 	// PS
-	//  PS1 2 暂时不得分
+	//  PS1 1,2 暂时不得分
 	//  PS1 3 得分
 	//  PS1 4 不得分
-	if PS1 == "2" || PS1 == "4" {
+	if PS1 == "1" || PS1 == "2" || PS1 == "4" {
 		PS1 = "0"
 	}
 	if PS1 == "3" {
@@ -90,16 +90,17 @@ func PredACMG2015(item map[string]string) string {
 		sumPS++
 		PM3 = "0"
 	}
-	//  PM5 2 暂时得分
+	//  PM5 1,2 不得分
 	//  PM5 3 得分
 	//  PM5 4 不得分
 	//  PM5 5 得分
-	if PM5 == "2" || PM5 == "3" || PM5 == "5" {
-		PM5 = "1"
-	}
-	if PM5 == "4" {
+	if PM5 == "1" || PM5 == "2" || PM5 == "4" {
 		PM5 = "0"
 	}
+	if PM5 == "3" || PM5 == "5" {
+		PM5 = "1"
+	}
+
 	var sumPM int
 	if PM1 == "1" {
 		sumPM++

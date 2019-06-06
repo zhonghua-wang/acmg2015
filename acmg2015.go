@@ -1,14 +1,5 @@
 package acmg2015
 
-import (
-	"regexp"
-)
-
-// regexp
-var (
-	isSplice = regexp.MustCompile(`splice[+-35]?$`)
-)
-
 func AddACMG2015(inputData map[string]string) map[string]string {
 	//var LOFIntoleranceGeneList = simple_util.JsonFile2MapInt("db/LOFIntoleranceGeneList.json")
 	var info = make(map[string]string)
