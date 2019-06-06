@@ -47,7 +47,7 @@ func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
 				return "1"
 			}
 		} else {
-			if c >= BS2NoLateOnsetThreshold {
+			if c > BS2NoLateOnsetThreshold {
 				return "1"
 			}
 		}
