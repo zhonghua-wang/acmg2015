@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+var PVS1AFThreshold = 0.05
+
 func FindLOFIntoleranceGeneList(fileName, key string, pathogenicRegexp *regexp.Regexp) map[string]int {
 	var geneList = make(map[string]int)
 	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
@@ -21,7 +23,7 @@ func FindLOFIntoleranceGeneList(fileName, key string, pathogenicRegexp *regexp.R
 		if FuncInfo[item["Function"]] < 3 {
 			continue
 		}
-		if !CheckAFAllLowThen(item, PVS1AFlist, 0.05, true) {
+		if !CheckAFAllLowThen(item, PVS1AFlist, PVS1AFThreshold, true) {
 			continue
 		}
 		geneList[item["Gene Symbol"]]++
