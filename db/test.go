@@ -20,11 +20,11 @@ import (
 
 // os
 var (
-	ex, _ = os.Executable()
-	//exPath = filepath.Dir(ex)
-	//pSep   = string(os.PathSeparator)
-	//dbPath       = exPath + pSep + "db" + pSep
-	//templatePath = exPath + pSep + "template" + pSep
+//ex, _ = os.Executable()
+//exPath = filepath.Dir(ex)
+//pSep   = string(os.PathSeparator)
+//dbPath       = exPath + pSep + "db" + pSep
+//templatePath = exPath + pSep + "template" + pSep
 )
 
 var (
@@ -231,10 +231,31 @@ func main() {
 	if false {
 		simple_util.DownloadFileProgress(genomcGffFile, genomicGffUrl)
 	}
-	if false {
+	if true {
+		var RSGregion = make(map[string][]evidence.Region)
+		var oldNMinfo = simple_util.Gz2Slice("ncbi_anno_rel104.nminfo.gz", "\t")
+		for _, item := range oldNMinfo {
+			var region = new(evidence.Region)
+			region.Chromosome = strings.Replace(item[0], "chr", "", 1)
+			start, err := strconv.Atoi(item[1])
+			simple_util.CheckErr(err)
+			end, err := strconv.Atoi(item[2])
+			simple_util.CheckErr(err)
+			region.Start = uint64(start)
+			region.End = uint64(end)
+			name := item[3]
+			region.Strand = item[4]
+			region.Gene = item[8]
+			old, ok := RSGregion[name]
+			if ok {
+				log.Printf("Duplicate Transcript(%s):\t%+v vs. %+v", name, old, *region)
+			} else {
+			}
+			RSGregion[name] = append(RSGregion[name], *region)
+		}
+
 		var genomicGFF = parseGff3.File2GFF3array(genomcGffFile)
 		acce2chr := simple_util.JsonFile2Map("accession2chr.json")
-		var RSGregion = make(map[string][]evidence.Region)
 		for _, item := range genomicGFF {
 			if item.Type != "transcript" && item.Type != "mRNA" {
 				continue
