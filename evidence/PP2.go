@@ -44,6 +44,8 @@ func CheckPP2(item map[string]string, ClinVarPP2GeneList, HgmdPP2GeneList map[st
 	gene := item["Gene Symbol"]
 	if ClinVarPP2GeneList[gene] > PP2MissenseRatioThreshold || HgmdPP2GeneList[gene] > PP2MissenseRatioThreshold {
 		return "1"
+	} else {
+		return "0"
 	}
 	return ""
 }
