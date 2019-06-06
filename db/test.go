@@ -118,6 +118,7 @@ func main() {
 	}
 
 	// test bix
+	var tbx *bix.Bix
 	if true {
 		tbx, err := bix.New("PathogenicLite.bed.gz")
 		simple_util.CheckErr(err, "load tabix")
@@ -316,7 +317,7 @@ func main() {
 		simple_util.CheckErr(err)
 		err = json.Unmarshal(b, &transcriptInfo)
 		simple_util.CheckErr(err)
-		fmt.Println("PVS1", evidence.CheckPVS1(item, LOFIntoleranceGeneList, transcriptInfo))
+		fmt.Println("PVS1", evidence.CheckPVS1(item, LOFIntoleranceGeneList, transcriptInfo, tbx))
 	}
 
 	// build PS1/PM5 db
@@ -547,6 +548,9 @@ func main() {
 		simple_util.CheckErr(simple_util.Json2rawFile("PM1PfamDomain.json", PM1PfamDomain))
 		simple_util.CheckErr(simple_util.Json2rawFile("PM1dbNSFPDomain.json", PM1dbNSFPDomain))
 	}
+	var PM1PfamDomain map[string]bool
+	simple_util.JsonFile2Data("PM1PfamDomain.json", PM1PfamDomain)
+	fmt.Println(PM1PfamDomain["PF00001.19"])
 
 	// build PP2 db
 	// load ClinVar
@@ -591,7 +595,7 @@ func main() {
 		}
 		jsonByte, err = simple_util.JsonIndent(hgmPP2GeneList, "", "\t")
 		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HgmPP2GeneList.json")
+		simple_util.Json2file(jsonByte, "HgmdPP2GeneList.json")
 	}
 
 	//build BP1 db
