@@ -20,7 +20,7 @@ var BS2AF1List = []string{
 }
 
 var (
-	BS2LateOnsetHomoThreshold = 4
+	BS2LateOnsetHomoThreshold = 5
 	BS2NoLateOnsetThreshold   = 0
 	BS2HitCountThreshold      = 2
 )
@@ -39,17 +39,20 @@ func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
 		c, e := strconv.Atoi(item[key])
 		if e == nil {
 			homoCount += c
+		} else {
+			c = 0
+		}
+		if lateOnsetList[item["Gene Symbol"]] > 0 {
+			if c >= BS2LateOnsetHomoThreshold {
+				return "1"
+			}
+		} else {
+			if c >= BS2NoLateOnsetThreshold {
+				return "1"
+			}
 		}
 	}
-	if lateOnsetList[item["Gene Symbol"]] > 0 {
-		if homoCount >= BS2LateOnsetHomoThreshold {
-			return "1"
-		}
-	} else {
-		if homoCount >= BS2NoLateOnsetThreshold {
-			return "1"
-		}
-	}
+
 	var hitCount = 0
 	var inherit = item["OMIM inheritance"]
 	if !isARXRNA.MatchString(inherit) && isADXD.MatchString(inherit) {
