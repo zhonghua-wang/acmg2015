@@ -4,8 +4,8 @@ import "regexp"
 
 // regexp
 var (
-	isARXRNA = regexp.MustCompile(`AR|XR|NA`)
-	isADXD   = regexp.MustCompile(`AD|XD`)
+	isARXRNA = regexp.MustCompile(`AR|XL|NA`)
+	isAD     = regexp.MustCompile(`AD`)
 )
 
 var (
@@ -24,14 +24,14 @@ var PM2AFList = []string{
 
 // PM2
 func CheckPM2(item map[string]string) string {
-	inherit := item["OMIM inheritance"]
+	inherit := item["ModeInheritance"]
 	if isARXRNA.MatchString(inherit) {
 		if CheckAFAllLowThen(item, PM2AFList, PM2ARAFThreshold, true) {
 			return "1"
 		} else {
 			return "0"
 		}
-	} else if isADXD.MatchString(inherit) {
+	} else if isAD.MatchString(inherit) {
 		if CheckAFAllLowThen(item, PM2AFList, PM2ADAFThreshold, true) {
 			return "1"
 		} else {
