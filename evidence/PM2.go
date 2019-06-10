@@ -4,7 +4,7 @@ import "regexp"
 
 // regexp
 var (
-	isARXRNA = regexp.MustCompile(`AR|XL|NA`)
+	isARXLNA = regexp.MustCompile(`AR|XL|NA`)
 	isAD     = regexp.MustCompile(`AD`)
 )
 
@@ -25,7 +25,7 @@ var PM2AFList = []string{
 // PM2
 func CheckPM2(item map[string]string) string {
 	inherit := item["ModeInheritance"]
-	if isARXRNA.MatchString(inherit) {
+	if isARXLNA.MatchString(inherit) {
 		if CheckAFAllLowThen(item, PM2AFList, PM2ARAFThreshold, true) {
 			return "1"
 		} else {
