@@ -14,10 +14,10 @@ var BA1AFList = []string{
 // flase:	"0"
 // nil	:	""
 func CheckBA1(item map[string]string) string {
-	if CheckAFAllLowThen(item, BA1AFList, BA1AFThreshold, true) {
-		return "0"
-	} else {
+	if !CheckAFAllLowThen(item, BA1AFList, BA1AFThreshold, true) {
 		return "1"
+	} else {
+		return "0"
 	}
 }
 
