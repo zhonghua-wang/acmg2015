@@ -35,7 +35,7 @@ func FindPathogenicMissense(fileName, key string, pathogenicRegexp *regexp.Regex
 
 // PS1
 func CheckPS1(item map[string]string, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist map[string]int) string {
-	if item["Function"] == "missense" {
+	if item["Function"] != "missense" {
 		return "0"
 	}
 
