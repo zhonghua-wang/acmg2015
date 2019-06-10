@@ -2,7 +2,7 @@ package evidence
 
 // PS1
 func CheckPM5(item map[string]string, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList map[string]int) string {
-	if item["Function"] == "missense" {
+	if item["Function"] != "missense" {
 		return "0"
 	}
 
