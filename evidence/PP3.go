@@ -15,6 +15,9 @@ var (
 // flase:	"0"
 // nil	:	""
 func CheckPP3(item map[string]string) string {
+	if item["PVS1"] == "1" || item["PVS1"] == "5" {
+		return "0"
+	}
 	if item["GERP++_RS_pred"] == "保守" &&
 		item["PhyloP Vertebrates Pred"] == "保守" &&
 		item["PhyloP Placental Mammals Pred"] == "保守" {
@@ -22,15 +25,11 @@ func CheckPP3(item map[string]string) string {
 		return "0"
 	}
 	if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
-		if item["PVS1"] == "1" || item["PVS1"] == "5" {
-			return "0"
+		if isD.MatchString(item["dbscSNV_RF_pred"]) &&
+			isD.MatchString(item["dbscSNV_ADA_pred"]) {
+			return "1"
 		} else {
-			if isD.MatchString(item["dbscSNV_RF_pred"]) &&
-				isD.MatchString(item["dbscSNV_ADA_pred"]) {
-				return "1"
-			} else {
-				return "0"
-			}
+			return "0"
 		}
 	} else {
 		if isD.MatchString(item["SIFT Pred"]) &&
