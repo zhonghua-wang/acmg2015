@@ -64,7 +64,7 @@ func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
 	var inherit = item["ModeInheritance"]
 	if !isARNA.MatchString(inherit) && isADXL.MatchString(inherit) {
 		for _, key := range BS2AF1List {
-			if CheckAFAllLowThen(item, []string{key}, 0, true) {
+			if !CheckAFAllLowThen(item, []string{key}, 0, true) {
 				hitCount++
 			}
 		}
