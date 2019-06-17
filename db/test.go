@@ -50,7 +50,24 @@ var columns = []string{
 	hgmdCol,
 }
 
+func xlsx2mapInt(fileName string) (geneList map[string]int) {
+	geneList = make(map[string]int)
+	title, db := simple_util.Sheet2MapArray(fileName, "Sheet1")
+	fmt.Println(title)
+	for _, item := range db {
+		geneList[item["基因"]]++
+	}
+	return
+}
+
 func main() {
+	if false {
+		BS2GeneList := xlsx2mapInt("BS2 晚发疾病的基因list-V2.3流程用.xlsx")
+		simple_util.CheckErr(simple_util.Json2File("BS2GeneList.json", BS2GeneList))
+		PVS1GeneList := xlsx2mapInt("PVS1 LOF不耐受基因集-V2.3流程用.xlsx")
+		simple_util.CheckErr(simple_util.Json2File("PVS1GeneList.json", PVS1GeneList))
+	}
+
 	l, err := os.Create("log")
 	simple_util.CheckErr(err)
 	defer simple_util.DeferClose(l)
