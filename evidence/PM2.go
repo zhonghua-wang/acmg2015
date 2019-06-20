@@ -25,7 +25,7 @@ var PM2AFList = []string{
 // PM2
 func CheckPM2(item map[string]string) string {
 	inherit := item["ModeInheritance"]
-	if isARXLNA.MatchString(inherit) {
+	if isARXLNA.MatchString(inherit) || inherit == "" {
 		if CheckAFAllLowThen(item, PM2AFList, PM2ARAFThreshold, true) {
 			return "1"
 		} else {
@@ -45,6 +45,6 @@ func ComparePM2(item map[string]string) {
 	rule := "PM2"
 	val := CheckPM2(item)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, append(PM2AFList, "OMIM inheritance")...)
+		PrintConflict(item, rule, val, append(PM2AFList, "ModeInheritance")...)
 	}
 }
