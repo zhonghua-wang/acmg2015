@@ -2,7 +2,6 @@ package evidence
 
 import (
 	"github.com/liserjrqlxue/simple-util"
-	"regexp"
 	"strconv"
 )
 
@@ -24,12 +23,6 @@ var (
 	BS2LateOnsetHomoThreshold = 5
 	BS2NoLateOnsetThreshold   = 0
 	BS2HitCountThreshold      = 2
-)
-
-// regexp
-var (
-	isARNA = regexp.MustCompile(`AR|NA`)
-	isADXL = regexp.MustCompile(`AD|XL`)
 )
 
 func GetLateOnsetList(fileName string) map[string]int {
@@ -62,7 +55,7 @@ func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
 
 	var hitCount = 0
 	var inherit = item["ModeInheritance"]
-	if !isARNA.MatchString(inherit) && isADXL.MatchString(inherit) {
+	if !isARXLNA.MatchString(inherit) && isAD.MatchString(inherit) {
 		for _, key := range BS2AF1List {
 			if !CheckAFAllLowThen(item, []string{key}, 0, true) {
 				hitCount++

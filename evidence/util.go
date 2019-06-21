@@ -24,6 +24,8 @@ var (
 	IsClinVarBLB = regexp.MustCompile(`Benign|Likely_benign`)
 	IsHgmdDM     = regexp.MustCompile(`DM$|DM\|`)
 	IsHgmdB      = regexp.MustCompile(`DP|FP|DFP`)
+	isARXLNA     = regexp.MustCompile(`AR|XL|NA`)
+	isAD         = regexp.MustCompile(`AD`)
 )
 
 // Tier1 >1

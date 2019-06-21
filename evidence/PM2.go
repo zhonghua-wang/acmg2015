@@ -1,13 +1,5 @@
 package evidence
 
-import "regexp"
-
-// regexp
-var (
-	isARXLNA = regexp.MustCompile(`AR|XL|NA`)
-	isAD     = regexp.MustCompile(`AD`)
-)
-
 var (
 	PM2ARAFThreshold = 0.005
 	PM2ADAFThreshold = 0.0
