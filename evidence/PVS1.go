@@ -117,6 +117,7 @@ func CheckOtherPathogenic(tbx *bix.Bix, item map[string]string, regions []Region
 func checkPathogenicOfRegion(tbx *bix.Bix, chromosome string, start, end int) bool {
 	rdr, err := tbx.Query(interfaces.AsIPosition(chromosome, start, end))
 	simple_util.CheckErr(err)
+	defer simple_util.DeferClose(rdr)
 	for {
 		_, err := rdr.Next()
 		if err == io.EOF {

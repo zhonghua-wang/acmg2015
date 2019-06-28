@@ -69,6 +69,7 @@ func FindPM1MutationDomain(fileName string, filter filterFunc) (mutationDomain m
 func countBix(tbx *bix.Bix, chr string, start, end int) (n int) {
 	rdr, err := tbx.Query(interfaces.AsIPosition(chr, start, end))
 	simple_util.CheckErr(err)
+	defer simple_util.DeferClose(rdr)
 	for {
 		_, err := rdr.Next()
 		if err == io.EOF {
