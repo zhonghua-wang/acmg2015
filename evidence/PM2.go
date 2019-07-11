@@ -9,7 +9,7 @@ var PM2AFList = []string{
 	"ESP6500 AF",
 	"1000G AF",
 	"ExAC AF",
-	"ExAC EAS",
+	"ExAC EAS AF",
 	"GnomAD AF",
 	"GnomAD EAS AF",
 }
