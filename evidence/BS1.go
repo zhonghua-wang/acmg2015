@@ -5,6 +5,7 @@ var BS1AFList = []string{
 	"1000G AF",
 	"ExAC AF",
 	"GnomAD AF",
+	"ESP6500 AF",
 }
 
 // ture	:	"1"
