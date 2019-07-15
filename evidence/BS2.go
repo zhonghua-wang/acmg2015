@@ -72,6 +72,6 @@ func CompareBS2(item map[string]string, lateOnsetList map[string]int) {
 	rule := "BS2"
 	val := CheckBS2(item, lateOnsetList)
 	if val != item[rule] {
-		PrintConflict(item, rule, val, append([]string{"Gene Symbol", "OMIM inheritance"}, append(BS2HomoList, BS2AF1List...)...)...)
+		PrintConflict(item, rule, val, append([]string{"Gene Symbol", "ModeInheritance"}, append(BS2HomoList, BS2AF1List...)...)...)
 	}
 }
