@@ -1,7 +1,9 @@
 package evidence
 
 import (
+	simple_util "github.com/liserjrqlxue/simple-util"
 	"regexp"
+	"strconv"
 )
 
 var BP3Func = map[string]bool{
@@ -13,6 +15,7 @@ var BP3Func = map[string]bool{
 var (
 	isRepeatSeq  = regexp.MustCompile(`\([ACGT]+\)n`)
 	isDeepIntron = regexp.MustCompile(`intron|span|splice[+-]10|splice[+-]20`)
+	repeatSeq    = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
 )
 
 // ture	:	"1"
@@ -23,12 +26,34 @@ func CheckBP3(item map[string]string) string {
 		if item["RepeatTag"] == "" || item["RepeatTag"] == "." {
 			return "0"
 		} else {
-			return "1"
+			subMatch := repeatSeq.FindStringSubmatch(item["cHGVS"])
+			if len(subMatch) > 1 {
+				dupCount, err := strconv.Atoi(subMatch[1])
+				simple_util.CheckErr(err)
+				if dupCount < 10 {
+					return "0"
+				} else {
+					return "1"
+				}
+			} else {
+				return "1"
+			}
 		}
 	} else if isDeepIntron.MatchString(item["Function"]) &&
 		isRepeatSeq.MatchString(item["RepeatTag"]) &&
 		item["VarType"] != "snv" && item["VarType"] != "ref" {
-		return "1"
+		subMatch := repeatSeq.FindStringSubmatch(item["cHGVS"])
+		if len(subMatch) > 1 {
+			dupCount, err := strconv.Atoi(subMatch[1])
+			simple_util.CheckErr(err)
+			if dupCount < 10 {
+				return "0"
+			} else {
+				return "1"
+			}
+		} else {
+			return "1"
+		}
 	} else {
 		return "0"
 	}
