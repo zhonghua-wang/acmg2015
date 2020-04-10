@@ -22,7 +22,6 @@ func CreateBA1Exception(fileName string) (BA1Exception map[string]bool) {
 
 // ture	:	"1"
 // flase:	"0"
-// nil	:	""
 func CheckBA1(item map[string]string, BA1Exception map[string]bool) string {
 	var key = item["Transcript"] + ":" + item["cHGVS"]
 	if BA1Exception[key] {

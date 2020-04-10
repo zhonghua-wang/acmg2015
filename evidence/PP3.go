@@ -1,19 +1,7 @@
 package evidence
 
-import (
-	"regexp"
-)
-
-var (
-	isSplice      = regexp.MustCompile(`splice`)
-	isSplice20    = regexp.MustCompile(`splice[+-]20`)
-	isD           = regexp.MustCompile(`D`)
-	isDeleterious = regexp.MustCompile(`deleterious`)
-)
-
 // ture	:	"1"
 // flase:	"0"
-// nil	:	""
 func CheckPP3(item map[string]string) string {
 	if item["PVS1"] == "1" || item["PVS1"] == "5" {
 		return "0"
@@ -41,7 +29,6 @@ func CheckPP3(item map[string]string) string {
 			return "0"
 		}
 	}
-	return ""
 }
 
 func ComparePP3(item map[string]string, lostOnly bool) {

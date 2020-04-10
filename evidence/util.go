@@ -20,12 +20,16 @@ type Region struct {
 }
 
 var (
-	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
-	IsClinVarBLB = regexp.MustCompile(`Benign|Likely_benign`)
-	IsHgmdDM     = regexp.MustCompile(`DM$|DM\|`)
-	IsHgmdB      = regexp.MustCompile(`DP|FP|DFP`)
-	isARXLNA     = regexp.MustCompile(`AR|XL|NA`)
-	isAD         = regexp.MustCompile(`AD`)
+	IsClinVarPLP  = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
+	IsClinVarBLB  = regexp.MustCompile(`Benign|Likely_benign`)
+	IsHgmdDM      = regexp.MustCompile(`DM$|DM\|`)
+	IsHgmdB       = regexp.MustCompile(`DP|FP|DFP`)
+	isARXLNA      = regexp.MustCompile(`AR|XL|NA`)
+	isAD          = regexp.MustCompile(`AD`)
+	isSplice      = regexp.MustCompile(`splice`)
+	isSplice20    = regexp.MustCompile(`splice[+-]20`)
+	isD           = regexp.MustCompile(`D`)
+	isDeleterious = regexp.MustCompile(`deleterious`)
 )
 
 // Tier1 >1

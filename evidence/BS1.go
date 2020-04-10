@@ -12,7 +12,6 @@ var BS1AFList = []string{
 
 // ture	:	"1"
 // flase:	"0"
-// nil	:	""
 func CheckBS1(item map[string]string) string {
 	if CheckAFAllLowThen(item, BS1AFList, BS1MorbidityThreshold, true) {
 		return "0"

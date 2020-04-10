@@ -10,24 +10,24 @@ var (
 
 // ture	:	"1"
 // flase:	"0"
-// nil	:	""
 func CheckBP7(item map[string]string) string {
 	if !isBP7Func.MatchString(item["Function"]) {
 		return "0"
 	}
-	if item["GERP++_RS_pred"] == "不保守" &&
+	if !(item["GERP++_RS_pred"] == "不保守" &&
 		item["PhyloP Vertebrates Pred"] == "不保守" &&
-		item["PhyloP Placental Mammals Pred"] == "不保守" {
-	} else {
+		item["PhyloP Placental Mammals Pred"] == "不保守") {
 		return "0"
 	}
-	if isP.MatchString(item["dbscSNV_RF_pred"]) &&
-		isP.MatchString(item["dbscSNV_ADA_pred"]) {
-	} else {
+	if isD.MatchString(item["dbscSNV_RF_pred"]) ||
+		isD.MatchString(item["dbscSNV_ADA_pred"]) ||
+		isD.MatchString(item["SpliceAI Pred"]) {
 		return "0"
 	}
-	return "1"
-	return ""
+	if isP.MatchString(item["SpliceAI Pred"]) {
+		return "1"
+	}
+	return "0"
 }
 
 func CompareBP7(item map[string]string, lostOnly bool) {
