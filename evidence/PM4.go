@@ -20,7 +20,6 @@ func CheckPM4(item map[string]string) string {
 	} else {
 		return "0"
 	}
-	return ""
 }
 
 func ComparePM4(item map[string]string) {
