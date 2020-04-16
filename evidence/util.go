@@ -30,6 +30,7 @@ var (
 	isSplice20    = regexp.MustCompile(`splice[+-]20`)
 	isD           = regexp.MustCompile(`D`)
 	isDeleterious = regexp.MustCompile(`deleterious`)
+	repeatSeq     = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
 )
 
 // Tier1 >1

@@ -47,7 +47,6 @@ func CheckPP2(item map[string]string, ClinVarPP2GeneList, HgmdPP2GeneList map[st
 	} else {
 		return "0"
 	}
-	return ""
 }
 
 func ComparePP2(item map[string]string, ClinVarPP2GeneList, HgmPP2GeneList map[string]float64) {

@@ -1,28 +1,26 @@
 package evidence
 
 import (
-	simple_util "github.com/liserjrqlxue/simple-util"
-	"regexp"
 	"strconv"
+
+	simple_util "github.com/liserjrqlxue/simple-util"
 )
 
 var BP3Func = map[string]bool{
 	"cds-del":   true,
 	"cds-ins":   true,
 	"cds-indel": true,
+	"splice-10": true,
+	"splice+10": true,
+	"splice-20": true,
+	"splice+20": true,
+	"intron":    true,
 }
-
-var (
-	isRepeatSeq  = regexp.MustCompile(`\([ACGT]+\)n`)
-	isDeepIntron = regexp.MustCompile(`intron|span|splice[+-]10|splice[+-]20`)
-	repeatSeq    = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
-)
 
 // ture	:	"1"
 // flase:	"0"
-// nil	:	""
 func CheckBP3(item map[string]string) string {
-	if BP3Func[item["Function"]] {
+	if BP3Func[item["Function"]] && item["VarType"] != "snv" {
 		if item["RepeatTag"] == "" || item["RepeatTag"] == "." {
 			return "0"
 		} else {
@@ -39,24 +37,8 @@ func CheckBP3(item map[string]string) string {
 				return "1"
 			}
 		}
-	} else if isDeepIntron.MatchString(item["Function"]) &&
-		isRepeatSeq.MatchString(item["RepeatTag"]) &&
-		item["VarType"] != "snv" && item["VarType"] != "ref" {
-		subMatch := repeatSeq.FindStringSubmatch(item["cHGVS"])
-		if len(subMatch) > 1 {
-			dupCount, err := strconv.Atoi(subMatch[1])
-			simple_util.CheckErr(err)
-			if dupCount < 10 {
-				return "0"
-			} else {
-				return "1"
-			}
-		} else {
-			return "1"
-		}
-	} else {
-		return "0"
 	}
+	return "0"
 }
 
 func CompareBP3(item map[string]string) {
