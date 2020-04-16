@@ -134,10 +134,6 @@ func PredACMG2015(item map[string]string) string {
 	if PM4 == "1" {
 		PP3 = "0"
 	}
-	//  PS1/PM5  PP5 不共存
-	if PS1 == "1" || PM5 == "1" {
-		PP5 = "0"
-	}
 	//  ACMG 已取消证据 PP5
 	PP5 = "0"
 	var sumPP int
