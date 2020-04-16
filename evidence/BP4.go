@@ -31,7 +31,8 @@ func CheckBP4(item map[string]string) string {
 		if isP.MatchString(item["SIFT Pred"]) &&
 			isP.MatchString(item["Polyphen2 HVAR Pred"]) &&
 			isP.MatchString(item["MutationTaster Pred"]) &&
-			isNeutral.MatchString(item["Ens Condel Pred"]) {
+			isNeutral.MatchString(item["Ens Condel Pred"]) &&
+			isP.MatchString(item["SpliceAI Pred"]) {
 			return "1"
 		} else {
 			return "0"
