@@ -11,21 +11,22 @@ var (
 
 // ture	:	"1"
 // flase:	"0"
-// nil	:	""
 func CheckBP4(item map[string]string) string {
-	if item["GERP++_RS_pred"] == "不保守" &&
+	if !(item["GERP++_RS_pred"] == "不保守" &&
 		item["PhyloP Vertebrates Pred"] == "不保守" &&
-		item["PhyloP Placental Mammals Pred"] == "不保守" {
-	} else {
+		item["PhyloP Placental Mammals Pred"] == "不保守") {
 		return "0"
 	}
 	if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
-		if isP.MatchString(item["dbscSNV_RF_pred"]) &&
-			isP.MatchString(item["dbscSNV_ADA_pred"]) {
-			return "1"
-		} else {
+		if isD.MatchString(item["dbscSNV_RF_pred"]) ||
+			isD.MatchString(item["dbscSNV_ADA_pred"]) ||
+			isD.MatchString(item["SpliceAI Pred"]) {
 			return "0"
 		}
+		if isP.MatchString(item["SpliceAI Pred"]) {
+			return "1"
+		}
+		return "0"
 	} else {
 		if isP.MatchString(item["SIFT Pred"]) &&
 			isP.MatchString(item["Polyphen2 HVAR Pred"]) &&
@@ -36,7 +37,6 @@ func CheckBP4(item map[string]string) string {
 			return "0"
 		}
 	}
-	return ""
 }
 
 func CompareBP4(item map[string]string, lostOnly bool) {
