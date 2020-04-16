@@ -80,15 +80,14 @@ func PredACMG2015(item map[string]string) string {
 		sumPS++
 	}
 
-	// PM
-	//  不与PS4 同时得分
-	if PS4 == "1" {
-		PM2 = "0"
-	}
 	//  PM3 2 升级到PS得分
 	if PM3 == "2" {
 		sumPS++
 		PM3 = "0"
+	}
+	// PM4 不与 PVS1 共同得分
+	if PVS1 == "1" {
+		PM4 = "0"
 	}
 	//  PM5 1,2 不得分
 	//  PM5 3 得分
@@ -126,6 +125,14 @@ func PredACMG2015(item map[string]string) string {
 	if PP1 == "2" {
 		sumPM++
 		PP1 = "0"
+	}
+	// PP3 不与 PS3 共同得分
+	if PS3 == "1" {
+		PP3 = "0"
+	}
+	// PP3 不与 PM4 共同得分
+	if PM4 == "1" {
+		PP3 = "0"
 	}
 	//  PS1/PM5  PP5 不共存
 	if PS1 == "1" || PM5 == "1" {
@@ -197,7 +204,7 @@ func PredACMG2015(item map[string]string) string {
 
 	var ACMG = make(map[string]bool)
 	if sumPVS > 0 {
-		if sumPS == 1 || sumPM > 1 || sumPP > 1 || (sumPM == 1 && sumPP == 1) {
+		if sumPS == 1 || (sumPM+sumPP > 1) {
 			ACMG["P"] = true
 		}
 		if sumPM == 1 {
@@ -232,6 +239,16 @@ func PredACMG2015(item map[string]string) string {
 		BLB = true
 	}
 	if PLP && BLB {
+		if !ACMG["B"] && BP4 == "1" {
+			sumBP--
+			if sumBP > 1 || (sumBP == 1 && sumBS == 1) {
+				return "VUS"
+			} else if ACMG["P"] {
+				return "P"
+			} else if ACMG["LP"] {
+				return "LP"
+			}
+		}
 		return "VUS"
 	} else if ACMG["P"] {
 		return "P"
