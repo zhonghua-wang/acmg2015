@@ -3,32 +3,55 @@ package evidence
 // ture	:	"1"
 // flase:	"0"
 func CheckPP3(item map[string]string) string {
-	if item["PVS1"] == "1" || item["PVS1"] == "5" {
-		return "0"
-	}
-	if item["GERP++_RS_pred"] == "保守" &&
-		item["PhyloP Vertebrates Pred"] == "保守" &&
-		item["PhyloP Placental Mammals Pred"] == "保守" {
-	} else {
-		return "0"
-	}
-	if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
-		if isD.MatchString(item["dbscSNV_RF_pred"]) &&
-			isD.MatchString(item["dbscSNV_ADA_pred"]) {
-			return "1"
-		} else {
+	var count = 0
+	for _, pred := range []string{
+		item["GERP++_RS_pred"],
+		item["PhyloP Vertebrates Pred"],
+		item["PhyloP Placental Mammals Pred"],
+	} {
+		if pred == "不保守" {
 			return "0"
-		}
-	} else {
-		if isD.MatchString(item["SIFT Pred"]) &&
-			isD.MatchString(item["Polyphen2 HVAR Pred"]) &&
-			isD.MatchString(item["MutationTaster Pred"]) &&
-			isDeleterious.MatchString(item["Ens Condel Pred"]) {
-			return "1"
-		} else {
-			return "0"
+		} else if pred == "保守" {
+			count++
 		}
 	}
+	if count < 2 {
+		return "0"
+	}
+
+	count = 0
+	if isNeutral.MatchString(item["Ens Condel Pred"]) {
+		return "0"
+	} else if isDeleterious.MatchString(item["Ens Condel Pred"]) {
+		count++
+	}
+	for _, pred := range []string{
+		item["SIFT Pred"],
+		item["MutationTaster Pred"],
+		item["Polyphen2 HVAR Pred"],
+		item["dbscSNV_RF_pred"],
+		item["dbscSNV_ADA_pred"],
+		item["SpliceAI Pred"],
+	} {
+		if isP.MatchString(pred) {
+			return "0"
+		} else if isD.MatchString(pred) {
+			count++
+		}
+	}
+	if item["Function"] == "splice-3" || item["Function"] == "splice-5" {
+		if item["PVS1"] == "1" {
+			return "0"
+		}
+	} else if isSplice.MatchString(item["Function"]) || item["Function"] == "intron" {
+		if isP.MatchString(item["SpliceAI Pred"]) {
+			return "1"
+		}
+	}
+	if count >= 2 {
+		return "1"
+	}
+	return "0"
 }
 
 func ComparePP3(item map[string]string, lostOnly bool) {
