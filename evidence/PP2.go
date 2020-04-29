@@ -1,57 +1,34 @@
 package evidence
 
-import (
-	"github.com/liserjrqlxue/simple-util"
-	"regexp"
-)
+import "github.com/liserjrqlxue/goUtil/textUtil"
 
 var (
-	PP2MissenseRatioThreshold = 0.50
+	PP2geneList map[string]bool
 )
 
-func CalGeneMissenseRatio(fileName, key string, filter *regexp.Regexp, threshold int) map[string]float64 {
-	var allCount = make(map[string]int)
-	var targetCount = make(map[string]int)
-	var ratioCount = make(map[string]float64)
-	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
-	for _, item := range itemArray {
-		if !filter.MatchString(item[key]) {
-			continue
-		}
-		gene := item["Gene Symbol"]
-		allCount[gene]++
-		if item["Function"] == "missense" {
-			targetCount[gene]++
-		}
+func GetPP2geneList(fileName string) {
+	var genes = textUtil.File2Array(fileName)
+	PP2geneList = make(map[string]bool)
+	for _, gene := range genes {
+		PP2geneList[gene] = true
 	}
-	for key, val := range targetCount {
-		if threshold > 0 {
-			if allCount[key] >= threshold {
-				ratioCount[key] = float64(val) / float64(allCount[key])
-			}
-		} else {
-			ratioCount[key] = float64(val) / float64(allCount[key])
-		}
-	}
-	return ratioCount
 }
 
 // PP2
-func CheckPP2(item map[string]string, ClinVarPP2GeneList, HgmdPP2GeneList map[string]float64) string {
+func CheckPP2(item map[string]string) string {
 	if item["Function"] != "missense" {
 		return "0"
 	}
-	gene := item["Gene Symbol"]
-	if ClinVarPP2GeneList[gene] > PP2MissenseRatioThreshold || HgmdPP2GeneList[gene] > PP2MissenseRatioThreshold {
+	if PP2geneList[item["Gene Symbol"]] {
 		return "1"
 	} else {
 		return "0"
 	}
 }
 
-func ComparePP2(item map[string]string, ClinVarPP2GeneList, HgmPP2GeneList map[string]float64) {
+func ComparePP2(item map[string]string) {
 	rule := "PP2"
-	val := CheckPP2(item, ClinVarPP2GeneList, HgmPP2GeneList)
+	val := CheckPP2(item)
 	if val != item[rule] {
 		PrintConflict(item, rule, val, "Function", "Gene Symbol")
 	}
