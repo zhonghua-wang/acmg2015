@@ -1,14 +1,16 @@
 package evidence
 
 import (
-	"github.com/brentp/bix"
-	"github.com/brentp/irelate/interfaces"
-	"github.com/liserjrqlxue/simple-util"
 	"io"
 	"log"
 	"regexp"
-	"strconv"
 	"strings"
+
+	"github.com/brentp/bix"
+	"github.com/brentp/irelate/interfaces"
+	"github.com/liserjrqlxue/goUtil/simpleUtil"
+	"github.com/liserjrqlxue/goUtil/stringsUtil"
+	"github.com/liserjrqlxue/goUtil/textUtil"
 )
 
 type filterFunc func(item map[string]string) bool
@@ -19,12 +21,27 @@ var (
 	hgmdCol         = "HGMD Pred"
 	domainDbNSFPCol = "Interpro_domain"
 	domainPfamCol   = "pfamId"
+	ext             = 3
+
+	PM1pfamId         = make(map[string]bool)
+	PM1InterproDomain = make(map[string]bool)
 )
 
 // regexp
 var (
-	isMissenseIndel = regexp.MustCompile(`missense|ins|del`)
+	isMissenseIndel = regexp.MustCompile(`missense|cds-ins|cds-del|cds-indel`)
 )
+
+func LoadPM1(pfamId, interproDomain string) {
+	var pfamIdArray = textUtil.File2Array(pfamId)
+	var interproDomainArray = textUtil.File2Array(interproDomain)
+	for _, key := range pfamIdArray {
+		PM1pfamId[key] = true
+	}
+	for _, key := range interproDomainArray {
+		PM1InterproDomain[key] = true
+	}
+}
 
 func FilterPathogenic(item map[string]string) (keep bool) {
 	if IsClinVarPLP.MatchString(item[clinvarCol]) || IsHgmdDM.MatchString(item[hgmdCol]) {
@@ -42,7 +59,7 @@ func FilterBenign(item map[string]string) (keep bool) {
 
 func FindPM1MutationDomain(fileName string, filter filterFunc) (mutationDomain map[string][]string) {
 	mutationDomain = make(map[string][]string)
-	itemArray, _ := simple_util.File2MapArray(fileName, "\t", nil)
+	itemArray, _ := textUtil.File2MapArray(fileName, "\t", nil)
 	for _, item := range itemArray {
 		if !filter(item) {
 			continue
@@ -68,21 +85,21 @@ func FindPM1MutationDomain(fileName string, filter filterFunc) (mutationDomain m
 
 func countBix(tbx *bix.Bix, chr string, start, end int) (n int) {
 	rdr, err := tbx.Query(interfaces.AsIPosition(chr, start, end))
-	simple_util.CheckErr(err)
-	defer simple_util.DeferClose(rdr)
+	simpleUtil.CheckErr(err)
+	defer simpleUtil.DeferClose(rdr)
 	for {
 		_, err := rdr.Next()
 		if err == io.EOF {
 			break
 		}
-		simple_util.CheckErr(err)
+		simpleUtil.CheckErr(err)
 		n++
 	}
 	return n
 }
 
 // PM1
-func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool, tbx *bix.Bix) string {
+func CheckPM1(item map[string]string, tbx *bix.Bix) string {
 	if !isMissenseIndel.MatchString(item["Function"]) {
 		return "0"
 	}
@@ -91,22 +108,20 @@ func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool, 
 	var flag bool
 
 	for _, k := range strings.Split(dbNSFP, ";") {
-		if dbNSFPDomain[k] {
+		if PM1InterproDomain[k] {
 			flag = true
 		}
 	}
 	for _, k := range strings.Split(pfam, ";") {
-		if PfamDomain[k] {
+		if PM1pfamId[k] {
 			flag = true
 		}
 	}
 	if !flag {
-		chr := strings.Replace(item["#Chr"], "chr", "", 1)
-		start, err := strconv.Atoi(item["Start"])
-		simple_util.CheckErr(err)
-		end, err := strconv.Atoi(item["Stop"])
-		simple_util.CheckErr(err)
-		n := countBix(tbx, chr, start-10, end+10)
+		var chr = strings.Replace(item["#Chr"], "chr", "", 1)
+		var start = stringsUtil.Atoi(item["Start"])
+		var end = stringsUtil.Atoi(item["Stop"])
+		n := countBix(tbx, chr, start-ext, end+ext)
 		if n >= 2 {
 			flag = true
 		}
@@ -116,12 +131,11 @@ func CheckPM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool, 
 	} else {
 		return "0"
 	}
-	return "0"
 }
 
-func ComparePM1(item map[string]string, dbNSFPDomain, PfamDomain map[string]bool, tbx *bix.Bix) {
+func ComparePM1(item map[string]string, tbx *bix.Bix) {
 	rule := "PM1"
-	val := CheckPM1(item, dbNSFPDomain, PfamDomain, tbx)
+	val := CheckPM1(item, tbx)
 	if val != item[rule] {
 		PrintConflict(item, rule, val, "Interpro_domain", "pfamId")
 	}
