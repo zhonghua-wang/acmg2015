@@ -197,7 +197,7 @@ func LoadBA1(fileName string) {
 	return
 }
 
-func loadPP2(pp2geneList string) {
+func LoadPP2(pp2geneList string) {
 	var genes = textUtil.File2Array(pp2geneList)
 	pp2GeneList = make(map[string]bool)
 	for _, gene := range genes {
