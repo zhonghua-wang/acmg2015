@@ -1,11 +1,16 @@
 package evidence
 
 import (
+	"bufio"
 	"fmt"
-	"github.com/liserjrqlxue/simple-util"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
+
+	"github.com/liserjrqlxue/goUtil/osUtil"
+	"github.com/liserjrqlxue/goUtil/simpleUtil"
+	"github.com/liserjrqlxue/goUtil/stringsUtil"
 )
 
 type Region struct {
@@ -19,7 +24,9 @@ type Region struct {
 	Gene       string
 }
 
+// regexp
 var (
+	getAAPos      = regexp.MustCompile(`^p\.[A-Z]\d+`)
 	IsClinVarPLP  = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
 	IsClinVarBLB  = regexp.MustCompile(`Benign|Likely_benign`)
 	IsHgmdDM      = regexp.MustCompile(`DM$|DM\|`)
@@ -64,7 +71,7 @@ func CheckAFAllLowThen(item map[string]string, AFlist []string, threshold float6
 			continue
 		}
 		AF, err := strconv.ParseFloat(af, 64)
-		simple_util.CheckErr(err)
+		simpleUtil.CheckErr(err)
 		if includeEqual {
 			if AF > threshold {
 				return false
@@ -91,4 +98,43 @@ func PrintConflict(item map[string]string, rule, val string, keys ...string) {
 	for _, key := range keys {
 		fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 	}
+}
+
+var (
+	hgvsCount   = make(map[string]int)
+	phgvsCount  = make(map[string]int)
+	aaPostCount = make(map[string]int)
+)
+
+func LoadPS1PM5(hgvs, pHgvs, aaPos string) {
+	hgvsCount = tsv2mapStringInt(hgvs)
+	phgvsCount = tsv2mapStringInt(pHgvs)
+	aaPostCount = tsv2mapStringInt(aaPos)
+}
+
+func tsv2mapStringInt(tsv string) map[string]int {
+	var db = make(map[string]int)
+
+	var file = osUtil.Open(tsv)
+	defer simpleUtil.DeferClose(file)
+
+	var scanner = bufio.NewScanner(file)
+	for scanner.Scan() {
+		var array = strings.Split(scanner.Text(), "\t")
+		array = append(array, "NA", "NA")
+		if array[1] == "NA" {
+			array[1] = "0"
+		}
+		var v, ok = db[array[0]]
+		if ok {
+			var vStr = strconv.Itoa(v)
+			if array[1] != vStr {
+				panic("dup key[" + array[0] + "],different value:[" + vStr + "]vs[" + array[1] + "]")
+			}
+		} else {
+			db[array[0]] = stringsUtil.Atoi(array[1])
+		}
+	}
+	simpleUtil.CheckErr(scanner.Err())
+	return db
 }
