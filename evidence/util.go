@@ -113,6 +113,7 @@ var (
 	pm1InterproDomain = make(map[string]bool)
 	bp1GeneList       = make(map[string]bool)
 	bs2GeneList       = make(map[string]bool)
+	ba1Exception      = make(map[string]bool)
 )
 
 func LoadPS1PM5(hgvs, pHgvs, aaPos string) {
@@ -186,4 +187,11 @@ func LoadBS2(fileName string) {
 	for _, key := range textUtil.File2Array(fileName) {
 		bs2GeneList[key] = true
 	}
+}
+
+func LoadBA1(fileName string) {
+	for _, key := range textUtil.File2Array(fileName) {
+		ba1Exception[key] = true
+	}
+	return
 }
