@@ -16,7 +16,7 @@ var PM2AFList = []string{
 }
 
 // PM2
-func CheckPM2(item map[string]string, BS2GeneList map[string]bool) string {
+func CheckPM2(item map[string]string) string {
 	inherit := item["ModeInheritance"]
 	if isARDRXLNA.MatchString(inherit) || inherit == "" {
 		if CheckAFAllLowThen(item, PM2AFList, PM2ARAFThreshold, true) {
@@ -25,7 +25,7 @@ func CheckPM2(item map[string]string, BS2GeneList map[string]bool) string {
 			return "0"
 		}
 	} else if isADYL.MatchString(inherit) {
-		if BS2GeneList[item["Gene Symbol"]] {
+		if bs2GeneList[item["Gene Symbol"]] {
 			if CheckAFAllLowThen(item, PM2AFList, PM2ADAFThreshold2, true) {
 				return "1"
 			}
@@ -39,9 +39,9 @@ func CheckPM2(item map[string]string, BS2GeneList map[string]bool) string {
 	return "0"
 }
 
-func ComparePM2(item map[string]string, BS2GeneList map[string]bool) {
+func ComparePM2(item map[string]string) {
 	rule := "PM2"
-	val := CheckPM2(item, BS2GeneList)
+	val := CheckPM2(item)
 	if val != item[rule] {
 		PrintConflict(item, rule, val, append(PM2AFList, "ModeInheritance")...)
 	}

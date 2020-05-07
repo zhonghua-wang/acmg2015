@@ -3,14 +3,18 @@ package evidence
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/brentp/bix"
+	"github.com/brentp/irelate/interfaces"
 	"github.com/liserjrqlxue/goUtil/osUtil"
 	"github.com/liserjrqlxue/goUtil/simpleUtil"
 	"github.com/liserjrqlxue/goUtil/stringsUtil"
+	"github.com/liserjrqlxue/goUtil/textUtil"
 )
 
 type Region struct {
@@ -26,20 +30,21 @@ type Region struct {
 
 // regexp
 var (
-	getAAPos      = regexp.MustCompile(`^p\.[A-Z]\d+`)
-	IsClinVarPLP  = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
-	IsClinVarBLB  = regexp.MustCompile(`Benign|Likely_benign`)
-	IsHgmdDM      = regexp.MustCompile(`DM$|DM\|`)
-	IsHgmdB       = regexp.MustCompile(`DP|FP|DFP`)
-	isARDRXLNA    = regexp.MustCompile(`AR|DR|XL|NA`)
-	isARDRNA      = regexp.MustCompile(`AR|DR|NA`)
-	isADYL        = regexp.MustCompile(`AD|YL`)
-	isADXLYL      = regexp.MustCompile(`AD|XL|YL`)
-	isSplice      = regexp.MustCompile(`splice`)
-	isSplice20    = regexp.MustCompile(`splice[+-]20`)
-	isD           = regexp.MustCompile(`D`)
-	isDeleterious = regexp.MustCompile(`deleterious`)
-	repeatSeq     = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
+	isMissenseIndel = regexp.MustCompile(`missense|cds-ins|cds-del|cds-indel`)
+	getAAPos        = regexp.MustCompile(`^p\.[A-Z]\d+`)
+	IsClinVarPLP    = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
+	IsClinVarBLB    = regexp.MustCompile(`Benign|Likely_benign`)
+	IsHgmdDM        = regexp.MustCompile(`DM$|DM\|`)
+	IsHgmdB         = regexp.MustCompile(`DP|FP|DFP`)
+	isARDRXLNA      = regexp.MustCompile(`AR|DR|XL|NA`)
+	isARDRNA        = regexp.MustCompile(`AR|DR|NA`)
+	isADYL          = regexp.MustCompile(`AD|YL`)
+	isADXLYL        = regexp.MustCompile(`AD|XL|YL`)
+	isSplice        = regexp.MustCompile(`splice`)
+	isSplice20      = regexp.MustCompile(`splice[+-]20`)
+	isD             = regexp.MustCompile(`D`)
+	isDeleterious   = regexp.MustCompile(`deleterious`)
+	repeatSeq       = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
 )
 
 // Tier1 >1
@@ -101,9 +106,13 @@ func PrintConflict(item map[string]string, rule, val string, keys ...string) {
 }
 
 var (
-	hgvsCount   = make(map[string]int)
-	phgvsCount  = make(map[string]int)
-	aaPostCount = make(map[string]int)
+	hgvsCount         = make(map[string]int)
+	phgvsCount        = make(map[string]int)
+	aaPostCount       = make(map[string]int)
+	pm1PfamId         = make(map[string]bool)
+	pm1InterproDomain = make(map[string]bool)
+	bp1GeneList       = make(map[string]bool)
+	bs2GeneList       = make(map[string]bool)
 )
 
 func LoadPS1PM5(hgvs, pHgvs, aaPos string) {
@@ -137,4 +146,44 @@ func tsv2mapStringInt(tsv string) map[string]int {
 	}
 	simpleUtil.CheckErr(scanner.Err())
 	return db
+}
+
+func LoadPM1(pfamId, interproDomain string) {
+	var pfamIdArray = textUtil.File2Array(pfamId)
+	var interproDomainArray = textUtil.File2Array(interproDomain)
+	for _, key := range pfamIdArray {
+		pm1PfamId[key] = true
+	}
+	for _, key := range interproDomainArray {
+		pm1InterproDomain[key] = true
+	}
+}
+
+func countBix(tbx *bix.Bix, chr string, start, end int) (n int) {
+	rdr, err := tbx.Query(interfaces.AsIPosition(chr, start, end))
+	simpleUtil.CheckErr(err)
+	defer simpleUtil.DeferClose(rdr)
+	for {
+		_, err := rdr.Next()
+		if err == io.EOF {
+			break
+		}
+		simpleUtil.CheckErr(err)
+		n++
+	}
+	return n
+}
+
+func LoadBP1(bp1geneList string) {
+	var genes = textUtil.File2Array(bp1geneList)
+	bp1GeneList = make(map[string]bool)
+	for _, gene := range genes {
+		bp1GeneList[gene] = true
+	}
+}
+
+func LoadBS2(fileName string) {
+	for _, key := range textUtil.File2Array(fileName) {
+		bs2GeneList[key] = true
+	}
 }

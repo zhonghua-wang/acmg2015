@@ -1,7 +1,6 @@
 package evidence
 
 import (
-	"github.com/liserjrqlxue/simple-util"
 	"strconv"
 )
 
@@ -25,15 +24,7 @@ var (
 	BS2HitCountThreshold      = 2
 )
 
-func GetLateOnsetList(fileName string) map[string]int {
-	var lateOnsetList = make(map[string]int)
-	for _, key := range simple_util.File2Array(fileName) {
-		lateOnsetList[key] = 1
-	}
-	return lateOnsetList
-}
-
-func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
+func CheckBS2(item map[string]string) string {
 	var homoCount = 0
 	for _, key := range BS2HomoList {
 		c, e := strconv.Atoi(item[key])
@@ -42,7 +33,7 @@ func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
 		} else {
 			c = 0
 		}
-		if lateOnsetList[item["Gene Symbol"]] > 0 {
+		if bs2GeneList[item["Gene Symbol"]] {
 			if c >= BS2LateOnsetHomoThreshold {
 				return "1"
 			}
@@ -68,9 +59,9 @@ func CheckBS2(item map[string]string, lateOnsetList map[string]int) string {
 	return "0"
 }
 
-func CompareBS2(item map[string]string, lateOnsetList map[string]int) {
+func CompareBS2(item map[string]string) {
 	rule := "BS2"
-	val := CheckBS2(item, lateOnsetList)
+	val := CheckBS2(item)
 	if val != item[rule] {
 		PrintConflict(item, rule, val, append([]string{"Gene Symbol", "ModeInheritance"}, append(BS2HomoList, BS2AF1List...)...)...)
 	}
