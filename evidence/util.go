@@ -114,6 +114,7 @@ var (
 	bp1GeneList       = make(map[string]bool)
 	bs2GeneList       = make(map[string]bool)
 	ba1Exception      = make(map[string]bool)
+	pp2GeneList       = make(map[string]bool)
 )
 
 func LoadPS1PM5(hgvs, pHgvs, aaPos string) {
@@ -194,4 +195,12 @@ func LoadBA1(fileName string) {
 		ba1Exception[key] = true
 	}
 	return
+}
+
+func loadPP2(pp2geneList string) {
+	var genes = textUtil.File2Array(pp2geneList)
+	pp2GeneList = make(map[string]bool)
+	for _, gene := range genes {
+		pp2GeneList[gene] = true
+	}
 }
