@@ -1,7 +1,7 @@
 package acmg2015
 
 // output B LB VUS LP P
-func PredACMG2015(item map[string]string) string {
+func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 
 	PVS1 := item["PVS1"]
 
@@ -196,6 +196,21 @@ func PredACMG2015(item map[string]string) string {
 	}
 	if BP7 == "1" {
 		sumBP++
+	}
+
+	// autoPVS1
+	if autoPVS1 {
+		sumPVS = 0
+		switch item["AutoPVS1 Adjusted Strength"] {
+		case "VeryStrong":
+			sumPVS++
+		case "Strong":
+			sumPS++
+		case "Moderate":
+			sumPM++
+		case "Supporting":
+			sumPP++
+		}
 	}
 
 	var ACMG = make(map[string]bool)
