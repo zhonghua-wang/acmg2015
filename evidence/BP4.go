@@ -1,14 +1,5 @@
 package evidence
 
-import (
-	"regexp"
-)
-
-var (
-	isP       = regexp.MustCompile(`P`)
-	isNeutral = regexp.MustCompile(`neutral`)
-)
-
 // ture	:	"1"
 // flase:	"0"
 func CheckBP4(item map[string]string) string {
