@@ -3,6 +3,20 @@ package evidence
 // ture	:	"1"
 // flase:	"0"
 func CheckPP3(item map[string]string, autoPVS1 bool) string {
+	if autoPVS1 {
+		switch item["AutoPVS1 Adjusted Strength"] {
+		case "VeryStrong":
+			return "0"
+		case "Strong":
+			return "0"
+		case "Moderate":
+			return "0"
+		case "Supporting":
+			return "0"
+		}
+	} else if item["PVS1"] == "1" {
+		return "0"
+	}
 	var count = 0
 	for _, pred := range []string{
 		item["GERP++_RS_pred"],
@@ -48,22 +62,7 @@ func CheckPP3(item map[string]string, autoPVS1 bool) string {
 				count++
 			}
 		}
-		if item["Function"] == "splice-3" || item["Function"] == "splice-5" {
-			if autoPVS1 {
-				switch item["AutoPVS1 Adjusted Strength"] {
-				case "VeryStrong":
-					return "0"
-				case "Strong":
-					return "0"
-				case "Moderate":
-					return "0"
-				case "Supporting":
-					return "0"
-				}
-			} else if item["PVS1"] == "1" {
-				return "0"
-			}
-		} else if isD.MatchString(item["SpliceAI Pred"]) {
+		if item["Function"] != "splice-3" && item["Function"] != "splice-5" && isD.MatchString(item["SpliceAI Pred"]) {
 			return "1"
 		}
 	}
