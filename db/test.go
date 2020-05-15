@@ -50,9 +50,9 @@ var columns = []string{
 	hgmdCol,
 }
 
-func xlsx2mapInt(fileName string) (geneList map[string]int) {
+func xlsx2mapInt(fileName, sheetName string) (geneList map[string]int) {
 	geneList = make(map[string]int)
-	title, db := simple_util.Sheet2MapArray(fileName, "Sheet1")
+	title, db := simple_util.Sheet2MapArray(fileName, sheetName)
 	fmt.Println(title)
 	for _, item := range db {
 		geneList[item["基因"]]++
@@ -60,12 +60,10 @@ func xlsx2mapInt(fileName string) (geneList map[string]int) {
 	return
 }
 
-func main() {
+func main1() {
 	if false {
-		BS2GeneList := xlsx2mapInt("BS2 晚发疾病的基因list-V2.3流程用.xlsx")
+		BS2GeneList := xlsx2mapInt("BS2 晚发疾病的基因list-V2.3流程用.xlsx", "Sheet1")
 		simple_util.CheckErr(simple_util.Json2File("BS2GeneList.json", BS2GeneList))
-		PVS1GeneList := xlsx2mapInt("PVS1 LOF不耐受基因集-V2.3流程用.xlsx")
-		simple_util.CheckErr(simple_util.Json2File("PVS1GeneList.json", PVS1GeneList))
 	}
 
 	l, err := os.Create("log")
@@ -131,6 +129,20 @@ func main() {
 		for _, item := range merge {
 			_, err = fmt.Fprintln(f, strings.Join(item, "\t"))
 			simple_util.CheckErr(err)
+		}
+	}
+	if true {
+		mapArray, _ := simple_util.File2MapArray("PathogenicLite.bed", "\t", nil)
+		f, err := os.Create("PathogenicLiteLite.bed")
+		simple_util.CheckErr(err)
+		defer simple_util.DeferClose(f)
+		fmt.Fprintln(f, strings.Join([]string{"#Chr", "Start", "Stop", "Ref", "Call", "MutationName"}, "\t"))
+		for _, item := range mapArray {
+			var list []string
+			for _, key := range []string{"#Chr", "Start", "Stop", "Ref", "Call", "MutationName"} {
+				list = append(list, item[key])
+			}
+			_, err = fmt.Fprintln(f, strings.Join(list, "\t"))
 		}
 	}
 
