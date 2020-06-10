@@ -30,6 +30,7 @@ func CheckBP4(item map[string]string) string {
 			return "0"
 		}
 	}
+	return "0"
 }
 
 func CompareBP4(item map[string]string, lostOnly bool) {
