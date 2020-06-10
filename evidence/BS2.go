@@ -46,7 +46,7 @@ func CheckBS2(item map[string]string) string {
 
 	var hitCount = 0
 	var inherit = item["ModeInheritance"]
-	if !isARDRNA.MatchString(inherit) && isADXLYL.MatchString(inherit) {
+	if !isARDRXLNA.MatchString(inherit) && isADYL.MatchString(inherit) {
 		for _, key := range BS2AF1List {
 			if !CheckAFAllLowThen(item, []string{key}, 0, true) {
 				hitCount++

@@ -28,7 +28,6 @@ type Region struct {
 	Gene       string
 }
 
-// regexp
 var (
 	isMissenseIndel = regexp.MustCompile(`missense|cds-ins|cds-del|cds-indel`)
 	getAAPos        = regexp.MustCompile(`^p\.[A-Z]\d+`)
@@ -37,10 +36,9 @@ var (
 	IsHgmdDM        = regexp.MustCompile(`DM$|DM\|`)
 	IsHgmdB         = regexp.MustCompile(`DP|FP|DFP`)
 	isARDRXLNA      = regexp.MustCompile(`AR|DR|XL|NA`)
-	isARDRNA        = regexp.MustCompile(`AR|DR|NA`)
 	isADYL          = regexp.MustCompile(`AD|YL`)
-	isADXLYL        = regexp.MustCompile(`AD|XL|YL`)
 	isSplice        = regexp.MustCompile(`splice`)
+	isSpliceIntron  = regexp.MustCompile(`splice|intron`)
 	isSplice20      = regexp.MustCompile(`splice[+-]20`)
 	isP             = regexp.MustCompile(`P`)
 	isD             = regexp.MustCompile(`D`)

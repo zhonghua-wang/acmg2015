@@ -8,16 +8,18 @@ func CheckBP4(item map[string]string) string {
 		item["PhyloP Placental Mammals Pred"] == "不保守") {
 		return "0"
 	}
-	if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
-		if isD.MatchString(item["dbscSNV_RF_pred"]) ||
-			isD.MatchString(item["dbscSNV_ADA_pred"]) ||
-			isD.MatchString(item["SpliceAI Pred"]) {
+	if isSpliceIntron.MatchString(item["Function"]) {
+		if isSplice.MatchString(item["Function"]) && !isSplice20.MatchString(item["Function"]) {
+			if isD.MatchString(item["dbscSNV_RF_pred"]) ||
+				isD.MatchString(item["dbscSNV_ADA_pred"]) ||
+				isD.MatchString(item["SpliceAI Pred"]) {
+				return "0"
+			}
+			if isP.MatchString(item["SpliceAI Pred"]) {
+				return "1"
+			}
 			return "0"
 		}
-		if isP.MatchString(item["SpliceAI Pred"]) {
-			return "1"
-		}
-		return "0"
 	} else {
 		if isP.MatchString(item["SIFT Pred"]) &&
 			isP.MatchString(item["Polyphen2 HVAR Pred"]) &&
