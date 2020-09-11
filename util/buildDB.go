@@ -2,10 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/liserjrqlxue/acmg2015"
-	"github.com/liserjrqlxue/simple-util"
 	"os"
 	"regexp"
+
+	"github.com/liserjrqlxue/acmg2015/evidence"
+
+	"github.com/liserjrqlxue/simple-util"
 )
 
 var (
@@ -14,16 +16,11 @@ var (
 		"",
 		"clinvar anno file",
 	)
-	hgmd = flag.String(
-		"hgmd",
-		"",
-		"hgmd anno file",
-	)
 )
 
 var (
-	isPathogenic        = regexp.MustCompile(`Pathogenic`)
-	isLikely_pathogenic = regexp.MustCompile(`Likely_pathogenic`)
+	isPathogenic       = regexp.MustCompile(`Pathogenic`)
+	islikelyPathogenic = regexp.MustCompile(`Likely_pathogenic`)
 )
 
 var BP1geneSet = make(map[string]int)
@@ -52,10 +49,10 @@ func main() {
 			info = BP1info{0, 0, 0, 0}
 		}
 		info.Count++
-		if isPathogenic.MatchString(clinvarTag) || isLikely_pathogenic.MatchString(clinvarTag) {
+		if isPathogenic.MatchString(clinvarTag) || islikelyPathogenic.MatchString(clinvarTag) {
 			info.P++
 			function := item["Function"]
-			if acmg2015.FuncInfo[function] == 3 {
+			if evidence.FuncInfo[function] == 3 {
 				info.LOF++
 			}
 		}

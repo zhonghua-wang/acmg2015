@@ -3,11 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/brentp/bix"
-	"github.com/brentp/irelate/interfaces"
-	"github.com/liserjrqlxue/acmg2015/evidence"
-	"github.com/liserjrqlxue/parse-gff3"
-	"github.com/liserjrqlxue/simple-util"
 	"io"
 	"io/ioutil"
 	"log"
@@ -16,6 +11,13 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/brentp/bix"
+	"github.com/brentp/irelate/interfaces"
+	"github.com/liserjrqlxue/parse-gff3"
+	"github.com/liserjrqlxue/simple-util"
+
+	"github.com/liserjrqlxue/acmg2015/evidence"
 )
 
 // os
@@ -403,11 +405,7 @@ func main1() {
 			"Transcript":   "NM_000142.4",
 			"pHGVS":        "p.G380R | p.Gly380Arg",
 		}
-		var ClinVarMissense = simple_util.JsonFile2MapInt("ClinVarPathogenicMissense.json")
-		var ClinVarPHGVSlist = simple_util.JsonFile2MapInt("ClinVarPHGVSList.json")
-		var HGMDMissense = simple_util.JsonFile2MapInt("HGMDPathogenicMissense.json")
-		var HGMDPHGVSlist = simple_util.JsonFile2MapInt("HGMDPHGVSList.json")
-		fmt.Println("PS1", evidence.CheckPS1(item, ClinVarMissense, ClinVarPHGVSlist, HGMDMissense, HGMDPHGVSlist))
+		fmt.Println("PS1", evidence.CheckPS1(item))
 	}
 	// test PM5
 	if false {
@@ -416,147 +414,25 @@ func main1() {
 			"Transcript":   "NM_000016.4",
 			"pHGVS":        "p.R206C | p.Arg206Cys",
 		}
-		var ClinVarPHGVSlist = simple_util.JsonFile2MapInt("ClinVarPHGVSList.json")
-		var ClinVarAAPosList = simple_util.JsonFile2MapInt("ClinVarAAPosList.json")
-		var HGMDPHGVSlist = simple_util.JsonFile2MapInt("HGMDPHGVSList.json")
-		var HGMDAAPosList = simple_util.JsonFile2MapInt("HGMDAAPosList.json")
-		fmt.Println("PM5", evidence.CheckPM5(item, ClinVarPHGVSlist, ClinVarAAPosList, HGMDPHGVSlist, HGMDAAPosList))
+		fmt.Println("PM5", evidence.CheckPM5(item))
 	}
 
 	// build PM1 db
 	if false {
-		var ClinVarPathogenicDomain = evidence.FindPM1MutationDomain(clinvarAnno, evidence.FilterPathogenic)
-		jsonByte, err := simple_util.JsonIndent(ClinVarPathogenicDomain, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarPathogenicDomain.json")
-
-		var HGMDPathogenicDomain = evidence.FindPM1MutationDomain(hgmdAnno, evidence.FilterPathogenic)
-		jsonByte, err = simple_util.JsonIndent(HGMDPathogenicDomain, "", "\t")
-		simple_util.CheckErr(simple_util.Json2rawFile("HGMDPathogenicDomain.json", HGMDPathogenicDomain))
-
 		var mutationList = make(map[string]int)
 		var dbNSFPPathogenicDomain = make(map[string]int)
 		var PfamPathogenicDomain = make(map[string]int)
 
-		for mutation := range ClinVarPathogenicDomain {
-			mutationList[mutation]++
-		}
-		for mutation := range HGMDPathogenicDomain {
-			mutationList[mutation]++
-		}
-
 		simple_util.CheckErr(simple_util.Json2rawFile("PathogenicMutation.json", mutationList))
-
-		for mutation := range mutationList {
-			clinvarDomain, ok1 := ClinVarPathogenicDomain[mutation]
-			hgmdDomain, ok2 := HGMDPathogenicDomain[mutation]
-			if ok1 && ok2 {
-				if clinvarDomain[0] == hgmdDomain[0] && clinvarDomain[1] == hgmdDomain[1] {
-					for _, domain := range strings.Split(clinvarDomain[0], ";") {
-						if domain != "" && domain != "." {
-							dbNSFPPathogenicDomain[domain]++
-						}
-					}
-					for _, domain := range strings.Split(clinvarDomain[1], ";") {
-						if domain != "" && domain != "." {
-							PfamPathogenicDomain[domain]++
-						}
-					}
-				} else {
-					log.Printf("[Conflicet Domain:%v vs. %v]\n", clinvarDomain, hgmdDomain)
-				}
-			} else if ok1 {
-				for _, domain := range strings.Split(clinvarDomain[0], ";") {
-					if domain != "" && domain != "." {
-						dbNSFPPathogenicDomain[domain]++
-					}
-				}
-				for _, domain := range strings.Split(clinvarDomain[1], ";") {
-					if domain != "" && domain != "." {
-						PfamPathogenicDomain[domain]++
-					}
-				}
-			} else if ok2 {
-				for _, domain := range strings.Split(hgmdDomain[0], ";") {
-					if domain != "" && domain != "." {
-						dbNSFPPathogenicDomain[domain]++
-					}
-				}
-				for _, domain := range strings.Split(hgmdDomain[1], ";") {
-					if domain != "" && domain != "." {
-						PfamPathogenicDomain[domain]++
-					}
-				}
-			}
-		}
 		simple_util.CheckErr(simple_util.Json2rawFile("dbNSFPPathogenicDomain.json", dbNSFPPathogenicDomain))
 		simple_util.CheckErr(simple_util.Json2rawFile("PfamPathogenicDomain.json", PfamPathogenicDomain))
 	}
 	if false {
-		var ClinVarBenignDomain = evidence.FindPM1MutationDomain(clinvarAnno, evidence.FilterBenign)
-		jsonByte, err := simple_util.JsonIndent(ClinVarBenignDomain, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarBenignDomain.json")
-
-		var HGMDBenignDomain = evidence.FindPM1MutationDomain(hgmdAnno, evidence.FilterBenign)
-		jsonByte, err = simple_util.JsonIndent(HGMDBenignDomain, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HGMDBenignDomain.json")
-
 		var mutationList = make(map[string]int)
 		var dbNSFPBenignDomain = make(map[string]int)
 		var PfamBenignDomain = make(map[string]int)
 
-		for mutation := range ClinVarBenignDomain {
-			mutationList[mutation]++
-		}
-		for mutation := range HGMDBenignDomain {
-			mutationList[mutation]++
-		}
-
 		simple_util.Json2File("BenignMutation.json", mutationList)
-		for mutation := range mutationList {
-			clinvarDomain, ok1 := ClinVarBenignDomain[mutation]
-			hgmdDomain, ok2 := HGMDBenignDomain[mutation]
-			if ok1 && ok2 {
-				if clinvarDomain[0] == hgmdDomain[0] && clinvarDomain[1] == hgmdDomain[1] {
-					for _, domain := range strings.Split(clinvarDomain[0], ";") {
-						if domain != "" && domain != "." {
-							dbNSFPBenignDomain[domain]++
-						}
-					}
-					for _, domain := range strings.Split(clinvarDomain[1], ";") {
-						if domain != "" && domain != "." {
-							PfamBenignDomain[domain]++
-						}
-					}
-				} else {
-					log.Printf("[Conflicet Domain:%v vs. %v]\n", clinvarDomain, hgmdDomain)
-				}
-			} else if ok1 {
-				for _, domain := range strings.Split(clinvarDomain[0], ";") {
-					if domain != "" && domain != "." {
-						dbNSFPBenignDomain[domain]++
-					}
-				}
-				for _, domain := range strings.Split(clinvarDomain[1], ";") {
-					if domain != "" && domain != "." {
-						PfamBenignDomain[domain]++
-					}
-				}
-			} else if ok2 {
-				for _, domain := range strings.Split(hgmdDomain[0], ";") {
-					if domain != "" && domain != "." {
-						dbNSFPBenignDomain[domain]++
-					}
-				}
-				for _, domain := range strings.Split(hgmdDomain[1], ";") {
-					if domain != "" && domain != "." {
-						PfamBenignDomain[domain]++
-					}
-				}
-			}
-		}
 		simple_util.Json2rawFile("dbNSFPBenignDomain.json", dbNSFPBenignDomain)
 		simple_util.Json2rawFile("PfamBenignDomain.json", PfamBenignDomain)
 	}
@@ -601,67 +477,6 @@ func main1() {
 	var PM1PfamDomain map[string]bool
 	simple_util.JsonFile2Data("PM1PfamDomain.json", PM1PfamDomain)
 	fmt.Println(PM1PfamDomain["PF00001.19"])
-
-	// build PP2 db
-	// load ClinVar
-	if false {
-		var ClinVarGenePathogenicMissenseRatio = evidence.CalGeneMissenseRatio(clinvarAnno, clinvarCol, evidence.IsClinVarPLP, 10)
-		jsonByte, err := simple_util.JsonIndent(ClinVarGenePathogenicMissenseRatio, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarGenePathogenicMissenseRatio.json")
-
-		var ClinVarGeneBenignMissenseRatio = evidence.CalGeneMissenseRatio(clinvarAnno, clinvarCol, evidence.IsClinVarBLB, 0)
-		jsonByte, err = simple_util.JsonIndent(ClinVarGeneBenignMissenseRatio, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarGeneBenignMissenseRatio.json")
-
-		var ClinVarPP2GeneList = make(map[string]float64)
-		for key, val := range ClinVarGenePathogenicMissenseRatio {
-			if ClinVarGeneBenignMissenseRatio[key] < 0.1 {
-				ClinVarPP2GeneList[key] = val
-			}
-		}
-		jsonByte, err = simple_util.JsonIndent(ClinVarPP2GeneList, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarPP2GeneList.json")
-	}
-	// load HGMD
-	if false {
-		var hgmdGenePathogenicMissenseRatio = evidence.CalGeneMissenseRatio(hgmdAnno, hgmdCol, evidence.IsHgmdDM, 10)
-		jsonByte, err := simple_util.JsonIndent(hgmdGenePathogenicMissenseRatio, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HgmdGenePathogenicMissenseRatio.json")
-
-		var hgmdGeneBenignMissenseRatio = evidence.CalGeneMissenseRatio(hgmdAnno, hgmdCol, evidence.IsHgmdB, 0)
-		jsonByte, err = simple_util.JsonIndent(hgmdGeneBenignMissenseRatio, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HgmdGeneBenignMissenseRatio.json")
-
-		var hgmPP2GeneList = make(map[string]float64)
-		for key, val := range hgmdGenePathogenicMissenseRatio {
-			if hgmdGeneBenignMissenseRatio[key] < 0.1 {
-				hgmPP2GeneList[key] = val
-			}
-		}
-		jsonByte, err = simple_util.JsonIndent(hgmPP2GeneList, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HgmdPP2GeneList.json")
-	}
-
-	//build BP1 db
-	// load ClinVar
-	if false {
-		var ClinVarGenePathogenicLoFRatio = evidence.CalGeneLoFRatio(clinvarAnno, clinvarCol, evidence.IsClinVarPLP, 10)
-		jsonByte, err := simple_util.JsonIndent(ClinVarGenePathogenicLoFRatio, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "ClinVarGenePathogenicLoFRatio.json")
-	}
-	if false {
-		var HgmdGeneBenignLoFRatio = evidence.CalGeneLoFRatio(hgmdAnno, hgmdCol, evidence.IsHgmdDM, 10)
-		jsonByte, err := simple_util.JsonIndent(HgmdGeneBenignLoFRatio, "", "\t")
-		simple_util.CheckErr(err)
-		simple_util.Json2file(jsonByte, "HgmdGenePathogenicLoFRatio.json")
-	}
 }
 
 type filterRule func(item map[string]string, key string, filter *regexp.Regexp) bool

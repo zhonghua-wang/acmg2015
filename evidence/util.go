@@ -2,7 +2,6 @@ package evidence
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 	"regexp"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/brentp/bix"
 	"github.com/brentp/irelate/interfaces"
+	"github.com/liserjrqlxue/goUtil/fmtUtil"
 	"github.com/liserjrqlxue/goUtil/osUtil"
 	"github.com/liserjrqlxue/goUtil/simpleUtil"
 	"github.com/liserjrqlxue/goUtil/stringsUtil"
@@ -32,20 +32,20 @@ var (
 	isMissenseIndel = regexp.MustCompile(`missense|cds-ins|cds-del|cds-indel`)
 	getAAPos        = regexp.MustCompile(`^p\.[A-Z]\d+`)
 	IsClinVarPLP    = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
-	IsClinVarBLB    = regexp.MustCompile(`Benign|Likely_benign`)
-	IsHgmdDM        = regexp.MustCompile(`DM$|DM\|`)
-	IsHgmdB         = regexp.MustCompile(`DP|FP|DFP`)
-	isARDRXLNA      = regexp.MustCompile(`AR|DR|XL|NA`)
-	isADYL          = regexp.MustCompile(`AD|YL`)
-	isSplice        = regexp.MustCompile(`splice`)
-	isSpliceIntron  = regexp.MustCompile(`splice|intron`)
-	isSplice20      = regexp.MustCompile(`splice[+-]20`)
-	isP             = regexp.MustCompile(`P`)
-	isD             = regexp.MustCompile(`D`)
-	isI             = regexp.MustCompile(`I`)
-	isNeutral       = regexp.MustCompile(`neutral`)
-	isDeleterious   = regexp.MustCompile(`deleterious`)
-	repeatSeq       = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
+
+	IsHgmdDM = regexp.MustCompile(`DM$|DM\|`)
+
+	isARDRXLNA     = regexp.MustCompile(`AR|DR|XL|NA`)
+	isADYL         = regexp.MustCompile(`AD|YL`)
+	isSplice       = regexp.MustCompile(`splice`)
+	isSpliceIntron = regexp.MustCompile(`splice|intron`)
+	isSplice20     = regexp.MustCompile(`splice[+-]20`)
+	isP            = regexp.MustCompile(`P`)
+	isD            = regexp.MustCompile(`D`)
+	isI            = regexp.MustCompile(`I`)
+	isNeutral      = regexp.MustCompile(`neutral`)
+	isDeleterious  = regexp.MustCompile(`deleterious`)
+	repeatSeq      = regexp.MustCompile(`c\..*\[(\d+)>\d+]`)
 )
 
 // Tier1 >1
@@ -92,7 +92,7 @@ func CheckAFAllLowThen(item map[string]string, AFlist []string, threshold float6
 }
 
 func PrintConflict(item map[string]string, rule, val string, keys ...string) {
-	fmt.Fprintf(
+	fmtUtil.Fprintf(
 		os.Stderr,
 		"Conflict %s:[%s] vs [%s]\t%s[%s]\n",
 		rule,
@@ -102,7 +102,7 @@ func PrintConflict(item map[string]string, rule, val string, keys ...string) {
 		item["MutationName"],
 	)
 	for _, key := range keys {
-		fmt.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
+		fmtUtil.Fprintf(os.Stderr, "\t%30s:[%s]\n", key, item[key])
 	}
 }
 
