@@ -33,7 +33,7 @@ func Init(cfg map[string]string) {
 }
 
 func AddEvidences(item map[string]string) {
-	if AutoPVS1 {
+	if !AutoPVS1 {
 		item["PVS1"] = evidence.CheckPVS1(item, lofList, transcriptInfo, tbx)
 	}
 	item["PS1"] = evidence.CheckPS1(item)
