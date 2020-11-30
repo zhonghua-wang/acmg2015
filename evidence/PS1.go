@@ -38,7 +38,7 @@ func CheckPS1(item map[string]string) string {
 	var mutation = item["MutationName"]
 	var key = item["Transcript"] + ":" + item["pHGVS"]
 	var countHGVS = hgvsCount[mutation]
-	var countPHGVS = hgvsCount[key]
+	var countPHGVS = phgvsCount[key]
 	if countPHGVS > countHGVS {
 		return "1"
 	} else {
