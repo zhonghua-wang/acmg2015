@@ -6,8 +6,8 @@ func CheckPM5(item map[string]string) string {
 		return "0"
 	}
 
-	var key = item["Transcript"] + ":" + item["pHGVS"]
-	var AAPos = getAAPos.FindString(item["pHGVS"])
+	var key = item["Transcript"] + ":" + item["pHGVS1"]
+	var AAPos = getAAPos.FindString(item["pHGVS1"])
 	if AAPos == "" {
 		return "0"
 	}
