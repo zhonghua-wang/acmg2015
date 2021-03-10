@@ -38,6 +38,14 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 	BP6 := item["BP6"]
 	BP7 := item["BP7"]
 
+	var sumPVS int
+	var sumPS int
+	var sumPM int
+	var sumPP int
+	var sumBA int
+	var sumBS int
+	var sumBP int
+
 	// PVS
 	//  PVS1 5 得分
 	//  PVS1 6 不得分
@@ -47,9 +55,34 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 	if PVS1 == "6" {
 		PVS1 = "0"
 	}
-	var sumPVS int
-	if PVS1 == "1" {
-		sumPVS++
+	// autoPVS1
+	// 若已使用PVS1，则不可同时使用PP3
+	// 任一强度的PVS1与PM4 不可共用的证据
+	if autoPVS1 {
+		switch item["AutoPVS1 Adjusted Strength"] {
+		case "VeryStrong":
+			sumPVS++
+			PP3 = "0"
+			PM4 = "0"
+		case "Strong":
+			sumPS++
+			PP3 = "0"
+			PM4 = "0"
+		case "Moderate":
+			sumPM++
+			PP3 = "0"
+			PM4 = "0"
+		case "Supporting":
+			sumPP++
+			PP3 = "0"
+			PM4 = "0"
+		}
+	} else {
+		if PVS1 == "1" {
+			sumPVS++
+			PP3 = "0"
+			PM4 = "0"
+		}
 	}
 
 	// PS
@@ -66,7 +99,6 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 	if PS4 == "5" {
 		PS4 = "1"
 	}
-	var sumPS int
 	if PS1 == "1" {
 		sumPS++
 	}
@@ -85,10 +117,6 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 		sumPS++
 		PM3 = "0"
 	}
-	// PM4 不与 PVS1 共同得分
-	if PVS1 == "1" {
-		PM4 = "0"
-	}
 	//  PM5 1,2 不得分
 	//  PM5 3 得分
 	//  PM5 4 不得分
@@ -100,7 +128,6 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 		PM5 = "1"
 	}
 
-	var sumPM int
 	if PM1 == "1" {
 		sumPM++
 	}
@@ -136,7 +163,6 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 	}
 	//  ACMG 已取消证据 PP5
 	PP5 = "0"
-	var sumPP int
 	if PP1 == "1" {
 		sumPP++
 	}
@@ -154,12 +180,10 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 	}
 
 	// BA
-	var sumBA int
 	if BA1 == "1" {
 		sumBA++
 	}
 	// BS
-	var sumBS int
 	if BS1 == "1" {
 		sumBS++
 	}
@@ -173,7 +197,6 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 		sumBS++
 	}
 	// BP
-	var sumBP int
 	// ACMG 已取消证据 BP6
 	BP6 = "0"
 	if BP1 == "1" {
@@ -196,21 +219,6 @@ func PredACMG2015(item map[string]string, autoPVS1 bool) string {
 	}
 	if BP7 == "1" {
 		sumBP++
-	}
-
-	// autoPVS1
-	if autoPVS1 {
-		sumPVS = 0
-		switch item["AutoPVS1 Adjusted Strength"] {
-		case "VeryStrong":
-			sumPVS++
-		case "Strong":
-			sumPS++
-		case "Moderate":
-			sumPM++
-		case "Supporting":
-			sumPP++
-		}
 	}
 
 	var ACMG = make(map[string]bool)
