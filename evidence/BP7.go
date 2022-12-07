@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	isBP7Func = regexp.MustCompile(`coding-synon|intron|splice[+-]20`)
+	isBP7Func = regexp.MustCompile(`coding-synon`)
 )
 
 // ture	:	"1"

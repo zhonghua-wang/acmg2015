@@ -10,11 +10,6 @@ var BP3Func = map[string]bool{
 	"cds-del":   true,
 	"cds-ins":   true,
 	"cds-indel": true,
-	"splice-10": true,
-	"splice+10": true,
-	"splice-20": true,
-	"splice+20": true,
-	"intron":    true,
 }
 
 // ture	:	"1"
