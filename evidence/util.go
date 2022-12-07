@@ -29,14 +29,14 @@ type Region struct {
 }
 
 var (
-	isMissenseIndel = regexp.MustCompile(`missense|cds-ins|cds-del|cds-indel`)
-	getAAPos        = regexp.MustCompile(`^p\.[A-Z]\d+`)
-	IsClinVarPLP    = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
+	PM1Function  = regexp.MustCompile(`missense|cds-indel`)
+	getAAPos     = regexp.MustCompile(`^p\.[A-Z]\d+`)
+	IsClinVarPLP = regexp.MustCompile(`Pathogenic|Likely_pathogenic`)
 
 	IsHgmdDM = regexp.MustCompile(`DM$|DM\|`)
 
-	isARDRXLNA     = regexp.MustCompile(`AR|DR|XL|NA`)
-	isADYL         = regexp.MustCompile(`AD|YL`)
+	isARDRXLPRDDNA = regexp.MustCompile(`AR|DR|XL|PR|DD|NA|UNK`)
+	isADPDYL       = regexp.MustCompile(`AD|PD|YL`)
 	isSplice       = regexp.MustCompile(`splice`)
 	isSpliceIntron = regexp.MustCompile(`splice|intron`)
 	isSplice20     = regexp.MustCompile(`splice[+-]20`)

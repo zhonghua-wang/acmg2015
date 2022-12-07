@@ -18,13 +18,13 @@ var PM2AFList = []string{
 // PM2
 func CheckPM2(item map[string]string) string {
 	inherit := item["ModeInheritance"]
-	if isARDRXLNA.MatchString(inherit) || inherit == "" {
+	if isARDRXLPRDDNA.MatchString(inherit) || inherit == "" {
 		if CheckAFAllLowThen(item, PM2AFList, PM2ARAFThreshold, true) {
 			return "1"
 		} else {
 			return "0"
 		}
-	} else if isADYL.MatchString(inherit) {
+	} else if isADPDYL.MatchString(inherit) {
 		if bs2GeneList[item["Gene Symbol"]] {
 			if CheckAFAllLowThen(item, PM2AFList, PM2ADAFThreshold2, true) {
 				return "1"

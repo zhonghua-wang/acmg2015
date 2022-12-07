@@ -8,12 +8,13 @@ import (
 )
 
 var (
-	pm1Ext = 3
+	pm1Ext   = 3
+	pm1Count = 2
 )
 
 // PM1
 func CheckPM1(item map[string]string, tbx *bix.Bix) string {
-	if !isMissenseIndel.MatchString(item["Function"]) {
+	if !PM1Function.MatchString(item["Function"]) {
 		return "0"
 	}
 	var dbNSFP = item["Interpro_domain"]
@@ -31,11 +32,14 @@ func CheckPM1(item map[string]string, tbx *bix.Bix) string {
 		}
 	}
 	if !flag {
+		if item["PS1"] == "1" || item["PM5"] == "1" {
+			return "0"
+		}
 		var chr = strings.Replace(item["#Chr"], "chr", "", 1)
 		var start = stringsUtil.Atoi(item["Start"])
 		var end = stringsUtil.Atoi(item["Stop"])
 		n := countBix(tbx, chr, start-pm1Ext, end+pm1Ext)
-		if n >= 2 {
+		if n >= pm1Count {
 			flag = true
 		}
 	}
