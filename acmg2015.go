@@ -27,6 +27,7 @@ func Init(cfg map[string]string) {
 	}
 	tbx = simpleUtil.HandleError(bix.New(cfg["PathogenicLite"])).(*bix.Bix)
 	evidence.LoadPP2(cfg["PP2GeneList"])
+	evidence.LoadPP2Zscore(cfg["PP2MissenseZScore"])
 	evidence.LoadBS2(cfg["LateOnset"])
 	evidence.LoadBP1(cfg["BP1GeneList"])
 	evidence.LoadBA1(cfg["BA1ExceptionList"])
