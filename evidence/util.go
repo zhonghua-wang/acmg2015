@@ -116,6 +116,7 @@ var (
 	bs2GeneList       = make(map[string]bool)
 	ba1Exception      = make(map[string]bool)
 	pp2GeneList       = make(map[string]bool)
+	pp2ZscoreMap      = make(map[string]float32)
 )
 
 func LoadPS1PM5(hgvs, pHgvs, aaPos string) {
@@ -204,4 +205,19 @@ func LoadPP2(pp2geneList string) {
 	for _, gene := range genes {
 		pp2GeneList[gene] = true
 	}
+}
+
+// load missense z-score data from file
+func LoadPP2Zscore(pp2ZscoreFile string) {
+	var file = osUtil.Open(pp2ZscoreFile)
+	defer simpleUtil.DeferClose(file)
+	var scanner = bufio.NewScanner(file)
+	for scanner.Scan() {
+		var array = strings.Split(scanner.Text(), "\t")
+		gene := array[0]
+		zscore, err := strconv.ParseFloat(array[4], 32)
+		simpleUtil.CheckErr(err)
+		pp2ZscoreMap[gene] = float32(zscore)
+	}
+	simpleUtil.CheckErr(scanner.Err())
 }
