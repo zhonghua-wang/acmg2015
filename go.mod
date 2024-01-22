@@ -1,4 +1,4 @@
-module github.com/liserjrqlxue/acmg2015
+module github.com/zhonghua-wang/acmg2015
 
 go 1.13
 

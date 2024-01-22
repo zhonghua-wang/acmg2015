@@ -4,8 +4,7 @@ import (
 	"github.com/brentp/bix"
 	"github.com/liserjrqlxue/goUtil/jsonUtil"
 	"github.com/liserjrqlxue/goUtil/simpleUtil"
-
-	"github.com/liserjrqlxue/acmg2015/evidence"
+	"github.com/zhonghua-wang/acmg2015/evidence"
 )
 
 var (

@@ -14,19 +14,19 @@ import (
 
 	"github.com/brentp/bix"
 	"github.com/brentp/irelate/interfaces"
-	"github.com/liserjrqlxue/parse-gff3"
-	"github.com/liserjrqlxue/simple-util"
+	parseGff3 "github.com/liserjrqlxue/parse-gff3"
+	simple_util "github.com/liserjrqlxue/simple-util"
 
-	"github.com/liserjrqlxue/acmg2015/evidence"
+	"github.com/zhonghua-wang/acmg2015/evidence"
 )
 
 // os
 var (
-//ex, _ = os.Executable()
-//exPath = filepath.Dir(ex)
-//pSep   = string(os.PathSeparator)
-//dbPath       = exPath + pSep + "db" + pSep
-//templatePath = exPath + pSep + "template" + pSep
+// ex, _ = os.Executable()
+// exPath = filepath.Dir(ex)
+// pSep   = string(os.PathSeparator)
+// dbPath       = exPath + pSep + "db" + pSep
+// templatePath = exPath + pSep + "template" + pSep
 )
 
 var (
